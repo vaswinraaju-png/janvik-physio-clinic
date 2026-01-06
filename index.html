@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Janvik Physiotherapy Clinic</title>
+  <title>Zanvik Physiotherapy Clinic | Banaswadi, Bengaluru</title>
+
+  <meta name="description" content="Zanvik Physiotherapy Clinic in Banaswadi, Bengaluru offers expert physiotherapy for pain relief, rehabilitation, posture correction and sports injuries.">
 
   <style>
     :root {
@@ -28,6 +30,7 @@
       line-height:1.6;
     }
 
+    /* HEADER */
     header {
       background:#fff;
       position:sticky;
@@ -43,6 +46,8 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
     }
 
     .logo {
@@ -51,12 +56,14 @@
       color:var(--primary);
     }
 
-    .contact {
+    .contact a {
       font-size:16px;
       font-weight:600;
       color:var(--secondary);
+      text-decoration:none;
     }
 
+    /* HERO */
     .hero {
       padding:80px 20px;
       background:linear-gradient(135deg,#E3F2FD,#E8F5E9);
@@ -69,7 +76,7 @@
     }
 
     .hero p {
-      max-width:600px;
+      max-width:700px;
       margin:auto;
       color:var(--muted);
       font-size:18px;
@@ -86,6 +93,7 @@
       font-size:16px;
     }
 
+    /* SECTIONS */
     section {
       padding:60px 20px;
       max-width:1200px;
@@ -99,6 +107,7 @@
       color:var(--primary);
     }
 
+    /* SERVICES */
     .services {
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -118,8 +127,9 @@
       color:var(--secondary);
     }
 
-    .form-wrapper {
-      max-width:500px;
+    /* ADDRESS */
+    .address-box {
+      max-width:800px;
       margin:auto;
       background:#fff;
       padding:30px;
@@ -128,28 +138,26 @@
       text-align:center;
     }
 
-    .form-wrapper p {
-      color:var(--muted);
-      margin-bottom:20px;
-      font-size:15px;
+    .address-box p {
+      margin-bottom:10px;
+      color:var(--text);
     }
 
-    input, textarea {
+    /* MAP */
+    .map {
+      margin-top:30px;
+      border-radius:15px;
+      overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    iframe {
       width:100%;
-      padding:12px;
-      margin-bottom:15px;
-      border:1px solid #ddd;
-      border-radius:8px;
-      font-size:14px;
-      background:#f9fafb;
+      height:350px;
+      border:0;
     }
 
-    .note {
-      font-size:13px;
-      color:var(--muted);
-      margin-top:10px;
-    }
-
+    /* FOOTER */
     footer {
       background:#fff;
       padding:20px;
@@ -159,6 +167,7 @@
       margin-top:40px;
     }
 
+    /* WHATSAPP */
     .whatsapp {
       position:fixed;
       bottom:20px;
@@ -183,15 +192,17 @@
 
 <header>
   <div class="header-container">
-    <div class="logo">Janvik Physiotherapy Clinic</div>
-    <div class="contact">📞 +91 98765 43210</div>
+    <div class="logo">Zanvik Physiotherapy Clinic</div>
+    <div class="contact">
+      📞 <a href="tel:09353077714">09353 077714</a>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <h1>Pain Relief · Mobility · Recovery</h1>
-  <p>Janvik Physiotherapy Clinic provides trusted care for pain management, rehabilitation, posture correction, and sports injuries.</p>
-  <a href="https://wa.me/919876543210" target="_blank">Chat on WhatsApp</a>
+  <p>Zanvik Physiotherapy Clinic in Banaswadi, Bengaluru offers professional physiotherapy care for pain management, rehabilitation, posture correction, and sports injuries.</p>
+  <a href="https://wa.me/919353077714" target="_blank">Chat on WhatsApp</a>
 </section>
 
 <section>
@@ -199,44 +210,48 @@
   <div class="services">
     <div class="service-card">
       <h3>Back & Neck Pain</h3>
-      <p>Specialized physiotherapy for spine-related pain.</p>
+      <p>Effective physiotherapy treatment for spine-related pain.</p>
     </div>
     <div class="service-card">
       <h3>Sports Injury Rehabilitation</h3>
-      <p>Customized recovery programs for active individuals.</p>
+      <p>Personalized recovery programs for athletes.</p>
     </div>
     <div class="service-card">
       <h3>Post-Surgery Rehabilitation</h3>
-      <p>Safe and structured rehab for faster recovery.</p>
+      <p>Structured rehab plans for faster healing.</p>
     </div>
     <div class="service-card">
       <h3>Posture Correction</h3>
-      <p>Address posture issues caused by modern lifestyles.</p>
+      <p>Fix posture issues caused by work and lifestyle.</p>
     </div>
   </div>
 </section>
 
-<section id="appointment">
-  <h2>Appointment Enquiry</h2>
-  <div class="form-wrapper">
-    <p>Fill this form for reference during your visit or WhatsApp consultation.</p>
+<section>
+  <h2>Clinic Location</h2>
 
-    <input type="text" placeholder="Full Name">
-    <input type="tel" placeholder="Mobile Number">
-    <textarea rows="4" placeholder="Your concern (optional)"></textarea>
+  <div class="address-box">
+    <p><strong>Zanvik Physiotherapy Clinic</strong></p>
+    <p>No. 88, OMBR Layout</p>
+    <p>Banaswadi, Bengaluru</p>
+    <p>Karnataka – 560043</p>
+    <p>📞 09353 077714</p>
 
-    <div class="note">
-      ⚠️ This form does not submit data.<br>
-      Please call or WhatsApp us to confirm appointments.
+    <div class="map">
+      <iframe 
+        src="https://www.google.com/maps?q=Zanvik%20physiotherapy%20clinic%20banaswadi&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
   </div>
 </section>
 
 <footer>
-  © 2026 Janvik Physiotherapy Clinic · All Rights Reserved
+  © 2026 Zanvik Physiotherapy Clinic · All Rights Reserved
 </footer>
 
-<a class="whatsapp" href="https://wa.me/919876543210" target="_blank">💬</a>
+<a class="whatsapp" href="https://wa.me/919353077714" target="_blank">💬</a>
 
 </body>
 </html>
