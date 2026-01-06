@@ -2,94 +2,181 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Zanvik Physiotherapy Clinic | Book Appointment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zanvik Physiotherapy Clinic | Pain Relief & Rehabilitation</title>
 
-  <meta name="description" content="Zanvik Physiotherapy Clinic offers expert physiotherapy for pain relief, sports injuries, post-surgery rehab, and home physiotherapy services." />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #9acbfd;
+      color: #00215c;
+    }
 
-  <link rel="stylesheet" href="style.css" />
+    .container {
+      max-width: 460px;
+      margin: 70px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      background: #f1c819;
+      color: #00215c;
+      padding: 6px 12px;
+      display: inline-block;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      display: none;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #255cc1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00215c;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: #255cc1;
+      text-decoration: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <h1>Zanvik Physiotherapy Clinic</h1>
-      <p>Move Better. Live Pain Free.</p>
-      <div class="cta-buttons">
-        <a href="#appointment" class="btn primary">Book Appointment</a>
-        <a href="https://wa.me/919999999999" target="_blank" class="btn secondary">WhatsApp Us</a>
-      </div>
-    </div>
-  </header>
+<div class="container">
+  <h1>Zanvik Physiotherapy Clinic</h1>
+  <div class="tagline">Book Your Appointment</div>
+  <p>Fill in your details and our physiotherapist will contact you shortly.</p>
 
-  <!-- About -->
-  <section class="section">
-    <div class="container">
-      <h2>About Us</h2>
-      <p>
-        Zanvik Physiotherapy Clinic is a patient-focused physiotherapy center
-        offering evidence-based treatments to relieve pain, restore movement,
-        and improve quality of life. We treat the root cause, not just symptoms.
-      </p>
-    </div>
-  </section>
+  <form
+    action="https://docs.google.com/forms/d/e/FORM_ID/formResponse"
+    method="POST"
+    target="hidden_iframe"
+    onsubmit="return submitForm();">
 
-  <!-- Services -->
-  <section class="section light">
-    <div class="container">
-      <h2>Our Services</h2>
-      <div class="services-grid">
-        <div class="service-card">Orthopaedic Physiotherapy</div>
-        <div class="service-card">Sports Injury Rehabilitation</div>
-        <div class="service-card">Post-Surgery Rehabilitation</div>
-        <div class="service-card">Neurological Physiotherapy</div>
-        <div class="service-card">Geriatric Physiotherapy</div>
-        <div class="service-card">Home Physiotherapy</div>
-      </div>
-    </div>
-  </section>
+    <input
+      type="text"
+      id="name"
+      name="entry.123456789"
+      placeholder="Patient Name"
+      required />
 
-  <!-- Approach -->
-  <section class="section">
-    <div class="container">
-      <h2>Our Treatment Approach</h2>
-      <ol class="approach">
-        <li>Detailed Assessment</li>
-        <li>Personalised Treatment Plan</li>
-        <li>Manual Therapy & Exercises</li>
-        <li>Progress Tracking</li>
-        <li>Posture & Lifestyle Guidance</li>
-      </ol>
-    </div>
-  </section>
+    <div class="error" id="nameError">Please enter your name</div>
 
-  <!-- Appointment -->
-  <section class="section light" id="appointment">
-    <div class="container">
-      <h2>Book an Appointment</h2>
-      <p>Fill the form below and our team will contact you shortly.</p>
+    <input
+      type="tel"
+      id="phone"
+      name="entry.987654321"
+      placeholder="10-digit Mobile Number"
+      required />
 
-      <!-- Google Form Embed -->
-      <iframe
-        src="https://docs.google.com/forms/d/e/PASTE_YOUR_FORM_ID/viewform?embedded=true"
-        width="100%"
-        height="700"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0">
-        Loading…
-      </iframe>
-    </div>
-  </section>
+    <div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>© 2026 Zanvik Physiotherapy Clinic. All Rights Reserved.</p>
-      <p>📍 Your City | 📞 +91 99999 99999</p>
-    </div>
-  </footer>
+    <button type="submit">Request Appointment</button>
+  </form>
+
+  <div class="footer">
+    <a href="https://terratern.com/privacy-policy/" target="_blank">Privacy Policy</a> |
+    <a href="https://terratern.com/terms-and-condition/" target="_blank">Terms</a>
+  </div>
+</div>
+
+<!-- Thank You Modal -->
+<div class="modal" id="thankYou">
+  <div class="modal-box">
+    <h3>Thank You!</h3>
+    <p>Our team will contact you shortly.</p>
+  </div>
+</div>
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
+<script>
+  function submitForm() {
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    document.getElementById("nameError").style.display = "none";
+    document.getElementById("phoneError").style.display = "none";
+
+    if (name.length < 1) {
+      document.getElementById("nameError").style.display = "block";
+      return false;
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+      document.getElementById("phoneError").style.display = "block";
+      return false;
+    }
+
+    document.getElementById("thankYou").style.display = "flex";
+
+    setTimeout(() => {
+      window.location.href = "https://wa.me/91XXXXXXXXXX";
+    }, 5000);
+
+    return true;
+  }
+</script>
 
 </body>
 </html>
