@@ -3,319 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zanvik Physiotherapy Clinic | Banaswadi</title>
 
-<meta name="description" content="Zanvik Physiotherapy Clinic in Banaswadi, Bengaluru offers expert physiotherapy for pain relief, rehabilitation, posture correction and sports injuries.">
+<title>Zanvik Physiotherapy Clinic | Banaswadi</title>
+<meta name="description" content="Zanvik Physiotherapy Clinic in Banaswadi offers personalized physiotherapy for pain relief, recovery, and mobility.">
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-  background:#f7fafc;
-  color:#1f2937;
-  line-height:1.6;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#f7fafc;color:#1f2937;line-height:1.6}
+a{text-decoration:none;color:inherit}
 
 /* HEADER */
-header{
-  background:#ffffff;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
+header{background:#fff;position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.header-wrap{max-width:1200px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:700;color:#1e88e5}
+.header-actions{display:flex;gap:15px;align-items:center;font-size:14px}
+.header-actions a{font-weight:600}
+.call{color:#43a047}
+.whatsapp{color:#25d366}
+.location{color:#555}
 
-.header-wrap{
-  max-width:1200px;
-  margin:auto;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
-  font-size:22px;
-  font-weight:bold;
-  color:#1e88e5;
-}
-
-.phone a{
-  color:#43a047;
-  text-decoration:none;
-  font-weight:600;
-}
+/* NAV */
+nav{background:#f1f5f9}
+.nav-wrap{max-width:1200px;margin:auto;padding:10px 20px;display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.nav-wrap a{color:#1e88e5;font-weight:600}
 
 /* HERO */
-.hero{
-  padding:80px 20px;
-  text-align:center;
-  background:linear-gradient(135deg,#e3f2fd,#e8f5e9);
-}
-
-.hero h1{
-  font-size:36px;
-  margin-bottom:10px;
-}
-
-.hero p{
-  max-width:700px;
-  margin:auto;
-  color:#555;
-  font-size:18px;
-}
+.hero{padding:90px 20px;text-align:center;background:linear-gradient(135deg,#e3f2fd,#e8f5e9)}
+.hero h1{font-size:38px;margin-bottom:10px}
+.hero p{font-size:18px;max-width:720px;margin:auto;color:#555}
+.hero-cta{margin-top:30px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
+.btn{padding:14px 26px;border-radius:30px;font-weight:600}
+.btn-green{background:#25d366;color:#fff}
+.btn-blue{background:#1e88e5;color:#fff}
+.badges{margin-top:25px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:14px;color:#2e7d32}
 
 /* SECTIONS */
-section{
-  padding:60px 20px;
-  max-width:1200px;
-  margin:auto;
-}
+section{padding:70px 20px;max-width:1200px;margin:auto}
+h2{text-align:center;color:#1e88e5;font-size:28px;margin-bottom:40px}
 
-section h2{
-  text-align:center;
-  color:#1e88e5;
-  font-size:28px;
-  margin-bottom:40px;
-}
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.card{background:#fff;padding:25px;border-radius:14px;box-shadow:0 5px 15px rgba(0,0,0,.07)}
+.card h3{color:#43a047;margin-bottom:8px}
 
-/* SERVICES */
-.services{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;
-}
+/* CONDITIONS */
+.conditions{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.conditions div{background:#fff;padding:14px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
 
-.service{
-  background:#fff;
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.07);
-  text-align:center;
-}
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;text-align:center}
+.step{background:#fff;padding:25px;border-radius:14px}
 
-.service h3{
-  color:#43a047;
-  margin-bottom:10px;
-}
-
-/* LEAD FORM */
-.form-card{
-  max-width:500px;
-  margin:auto;
-  background:#fff;
-  padding:30px;
-  border-radius:16px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.12);
-}
-
-.form-card p{
-  text-align:center;
-  margin-bottom:20px;
-  color:#555;
-}
-
-input,textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  margin-bottom:12px;
-  font-size:14px;
-}
-
-textarea{resize:none;}
-
-button{
-  width:100%;
-  padding:14px;
-  background:#43a047;
-  color:#fff;
-  border:none;
-  border-radius:30px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.error{
-  color:#e53935;
-  font-size:12px;
-  display:none;
-  margin-bottom:8px;
-}
-
-.success{
-  display:none;
-  text-align:center;
-  color:#2e7d32;
-  margin-top:15px;
-}
+/* FORM */
+.form-card{max-width:500px;margin:auto;background:#fff;padding:30px;border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,.12)}
+input,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;margin-bottom:10px;font-size:14px}
+textarea{resize:none}
+button{width:100%;padding:14px;background:#43a047;color:#fff;border:none;border-radius:30px;font-size:16px;cursor:pointer}
+.error{color:#e53935;font-size:12px;display:none;margin-bottom:6px}
+.success{display:none;text-align:center;color:#2e7d32;margin-top:15px}
 
 /* LOCATION */
-.location-box{
-  max-width:800px;
-  margin:auto;
-  background:#fff;
-  padding:30px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  text-align:center;
-}
-
-iframe{
-  width:100%;
-  height:350px;
-  border:0;
-  border-radius:12px;
-  margin-top:20px;
-}
+.location-box{max-width:800px;margin:auto;background:#fff;padding:30px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);text-align:center}
+iframe{width:100%;height:350px;border:0;border-radius:12px;margin-top:20px}
 
 /* FOOTER */
-footer{
-  background:#ffffff;
-  text-align:center;
-  padding:20px;
-  font-size:14px;
-  color:#666;
-}
+footer{background:#fff;text-align:center;padding:20px;font-size:14px;color:#666}
 
-/* WHATSAPP FLOAT */
-.whatsapp{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#25d366;
-  color:#fff;
-  padding:15px 18px;
-  border-radius:50%;
-  font-size:22px;
-  text-decoration:none;
-  box-shadow:0 10px 25px rgba(0,0,0,0.25);
-}
+/* FLOAT */
+.float-wa{position:fixed;bottom:20px;right:20px;background:#25d366;color:#fff;padding:15px 18px;border-radius:50%;font-size:22px;box-shadow:0 10px 25px rgba(0,0,0,.25)}
 
-@media(max-width:600px){
-  .hero h1{font-size:28px;}
-}
+@media(max-width:600px){.hero h1{font-size:30px}}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-wrap">
     <div class="logo">Zanvik Physiotherapy Clinic</div>
-    <div class="phone">📞 <a href="tel:09353077714">09353 077714</a></div>
+    <div class="header-actions">
+      <a class="call" href="tel:09353077714">📞 Call Now</a>
+      <a class="whatsapp" href="https://wa.me/919353077714">🟢 WhatsApp</a>
+      <a class="location" href="https://maps.google.com/?q=Zanvik+physiotherapy+clinic+banaswadi" target="_blank">📍 Location</a>
+    </div>
   </div>
 </header>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Pain Relief · Mobility · Recovery</h1>
-  <p>Professional physiotherapy care in Banaswadi, Bengaluru for pain management, rehabilitation and posture correction.</p>
+<nav>
+  <div class="nav-wrap">
+    <a href="#home">Home</a>
+    <a href="#services">Services</a>
+    <a href="#conditions">Conditions</a>
+    <a href="#whyus">Why Us</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<div class="hero" id="home">
+  <h1>Move Better. Live Better.</h1>
+  <p>Personalized physiotherapy care for pain relief, recovery, and mobility — right here in Banaswadi.</p>
+
+  <div class="hero-cta">
+    <a class="btn btn-green" href="https://wa.me/919353077714">🟢 Book on WhatsApp</a>
+    <a class="btn btn-blue" href="tel:09353077714">📞 Call Now</a>
+  </div>
+
+  <div class="badges">
+    ✔ Certified Physiotherapists
+    ✔ Evidence-Based Treatment
+    ✔ Modern Equipment
+  </div>
 </div>
 
-<!-- SERVICES -->
-<section>
+<section id="services">
 <h2>Our Services</h2>
-<div class="services">
-  <div class="service"><h3>Back & Neck Pain</h3></div>
-  <div class="service"><h3>Sports Injury Rehab</h3></div>
-  <div class="service"><h3>Post-Surgery Rehab</h3></div>
-  <div class="service"><h3>Posture Correction</h3></div>
+<div class="grid">
+  <div class="card"><h3>Orthopedic Physiotherapy</h3><p>Targeted care for bones & joints.</p></div>
+  <div class="card"><h3>Sports Injury Rehab</h3><p>Recover safely and return stronger.</p></div>
+  <div class="card"><h3>Back & Neck Pain</h3><p>Relief from daily movement pain.</p></div>
+  <div class="card"><h3>Post-Surgery Rehab</h3><p>Guided recovery after surgery.</p></div>
+  <div class="card"><h3>Neurological Physio</h3><p>Movement re-training & control.</p></div>
+  <div class="card"><h3>Geriatric Physio</h3><p>Strength & balance for seniors.</p></div>
 </div>
 </section>
 
-<!-- LEAD FORM -->
-<section id="enquiry">
-<h2>Enquiry Form</h2>
+<section id="conditions">
+<h2>Conditions We Treat</h2>
+<div class="conditions">
+  <div>Back pain / Slip disc</div>
+  <div>Neck pain / Cervical issues</div>
+  <div>Knee pain / Osteoarthritis</div>
+  <div>Shoulder pain / Frozen shoulder</div>
+  <div>Sports injuries</div>
+  <div>Post-fracture stiffness</div>
+  <div>Post-stroke rehabilitation</div>
+</div>
+<p style="text-align:center;margin-top:20px;"><strong>Not listed? Talk to us.</strong></p>
+</section>
+
+<section id="whyus">
+<h2>Why Choose Us</h2>
+<div class="grid">
+  <div class="card">Personalized one-on-one sessions</div>
+  <div class="card">Root-cause treatment approach</div>
+  <div class="card">Experienced & certified physiotherapists</div>
+  <div class="card">Clean, calm, patient-friendly clinic</div>
+</div>
+</section>
+
+<section>
+<h2>How Treatment Works</h2>
+<div class="steps">
+  <div class="step">1️⃣ Assessment & pain analysis</div>
+  <div class="step">2️⃣ Personalized treatment plan</div>
+  <div class="step">3️⃣ Therapy & guided exercises</div>
+  <div class="step">4️⃣ Recovery tracking & prevention</div>
+</div>
+</section>
+
+<section id="contact">
+<h2>Contact Us</h2>
 
 <div class="form-card">
-<p>Submit your enquiry and join our WhatsApp group</p>
+<p>Submit your enquiry and we’ll connect you to our WhatsApp group</p>
 
 <form
-  action="https://docs.google.com/forms/d/e/1FAIpQLScfqUhTtyZYGUO8wdGFmm3-HIpzNtgE6qOFb4ma3dhlIKKcqw/formResponse"
-  method="POST"
-  target="hidden_iframe"
-  onsubmit="return submitLead();">
+action="https://docs.google.com/forms/d/e/1FAIpQLScfqUhTtyZYGUO8wdGFmm3-HIpzNtgE6qOFb4ma3dhlIKKcqw/formResponse"
+method="POST"
+target="hidden_iframe"
+onsubmit="return submitLead();">
 
-  <input type="text" name="entry.857300144" id="name" placeholder="Patient Name" required>
-  <div class="error" id="nameError">Please enter your name</div>
+<input type="text" name="entry.857300144" id="name" placeholder="Patient Name" required>
+<div class="error" id="nameError">Please enter your name</div>
 
-  <input type="tel" name="entry.1142141140" id="phone" placeholder="10-digit Mobile Number" required>
-  <div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
+<input type="tel" name="entry.1142141140" id="phone" placeholder="10-digit Mobile Number" required>
+<div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
 
-  <textarea name="entry.296726839" id="concern" placeholder="Describe your pain or concern" rows="4" required></textarea>
-  <div class="error" id="concernError">Please describe your concern</div>
+<textarea name="entry.296726839" id="concern" placeholder="Describe your pain or concern" rows="4" required></textarea>
+<div class="error" id="concernError">Please describe your concern</div>
 
-  <button type="submit">Submit Enquiry</button>
+<button type="submit">Submit Enquiry</button>
 </form>
 
 <div class="success" id="successMsg">
-  ✅ Enquiry submitted successfully. Redirecting you to WhatsApp…
+✅ Redirecting you to WhatsApp…
 </div>
 
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 </div>
 </section>
 
-<!-- LOCATION -->
 <section>
 <h2>Clinic Location</h2>
-
 <div class="location-box">
 <p><strong>Zanvik Physiotherapy Clinic</strong></p>
-<p>No. 88, OMBR Layout, Banaswadi</p>
-<p>Bengaluru, Karnataka – 560043</p>
+<p>No. 88, OMBR Layout, Banaswadi, Bengaluru – 560043</p>
 <p>📞 09353 077714</p>
-
-<iframe src="https://www.google.com/maps?q=Zanvik%20physiotherapy%20clinic%20banaswadi&output=embed" loading="lazy"></iframe>
+<iframe src="https://www.google.com/maps?q=Zanvik%20physiotherapy%20clinic%20banaswadi&output=embed"></iframe>
 </div>
 </section>
 
 <footer>
-© 2026 Zanvik Physiotherapy Clinic · All Rights Reserved
+© 2026 Zanvik Physiotherapy Clinic · Designed for patient care & comfort
 </footer>
 
-<a class="whatsapp" href="https://wa.me/919353077714" target="_blank">💬</a>
+<a class="float-wa" href="https://wa.me/919353077714">💬</a>
 
 <script>
-const phoneInput = document.getElementById("phone");
-
-phoneInput.addEventListener("input", function(){
-  this.value = this.value.replace(/\D/g,'').slice(0,10);
-});
+const phoneInput=document.getElementById("phone");
+phoneInput.addEventListener("input",()=>{phoneInput.value=phoneInput.value.replace(/\D/g,'').slice(0,10);});
 
 function submitLead(){
-  const name=document.getElementById("name").value.trim();
-  const phone=phoneInput.value.trim();
-  const concern=document.getElementById("concern").value.trim();
+const name=nameInput=name=document.getElementById("name").value.trim();
+const phone=phoneInput.value.trim();
+const concern=document.getElementById("concern").value.trim();
 
-  document.getElementById("nameError").style.display="none";
-  document.getElementById("phoneError").style.display="none";
-  document.getElementById("concernError").style.display="none";
+document.getElementById("nameError").style.display="none";
+document.getElementById("phoneError").style.display="none";
+document.getElementById("concernError").style.display="none";
 
-  if(name.length<1){document.getElementById("nameError").style.display="block";return false;}
-  if(!/^\d{10}$/.test(phone)){document.getElementById("phoneError").style.display="block";return false;}
-  if(concern.length<5){document.getElementById("concernError").style.display="block";return false;}
+if(name.length<1){document.getElementById("nameError").style.display="block";return false;}
+if(!/^\d{10}$/.test(phone)){document.getElementById("phoneError").style.display="block";return false;}
+if(concern.length<5){document.getElementById("concernError").style.display="block";return false;}
 
-  setTimeout(()=>{
-    document.getElementById("successMsg").style.display="block";
-    document.querySelector("form").reset();
+setTimeout(()=>{
+document.getElementById("successMsg").style.display="block";
+document.querySelector("form").reset();
+setTimeout(()=>{window.location.href="https://chat.whatsapp.com/Lmegx9nKkL6IQGHgKlcaac";},1500);
+},500);
 
-    // 🔁 REDIRECT TO WHATSAPP GROUP
-    setTimeout(()=>{
-      window.location.href="https://chat.whatsapp.com/Lmegx9nKkL6IQGHgKlcaac";
-    },1500);
-
-  },500);
-
-  return true;
+return true;
 }
 </script>
 
