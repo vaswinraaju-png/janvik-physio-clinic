@@ -1,160 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Zanvik Physiotherapy Clinic | Get a Call Back</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zanvik Physiotherapy Clinic – Enquiry</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #9acbfd;
-  color: #00215c;
-}
-.container {
-  max-width: 450px;
-  margin: 80px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-}
-.tag {
-  background: #f1c819;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  display: inline-block;
-}
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-button {
-  width: 100%;
-  padding: 12px;
-  background: #255cc1;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-button:hover {
-  background: #00215c;
-}
-.error {
-  color: red;
-  font-size: 12px;
-  display: none;
-}
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.modal-box {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-}
-.footer {
-  margin-top: 15px;
-  font-size: 12px;
-}
-.footer a {
-  color: #255cc1;
-  text-decoration: none;
-}
-</style>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      max-width: 420px;
+      width: 100%;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e88e5;
+      margin-bottom: 8px;
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #43a047;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #e53935;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .success {
+      display: none;
+      margin-top: 15px;
+      color: #2e7d32;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>Zanvik Physiotherapy Clinic</h1>
-  <div class="tag">Get a Call Back</div>
-  <p>Leave your details and our physiotherapist will contact you shortly.</p>
+  <div class="card">
+    <h1>Zanvik Physiotherapy Clinic</h1>
+    <p>Submit your enquiry and we’ll contact you shortly</p>
 
-  <form
-    action="https://docs.google.com/forms/d/e/FORM_ID/formResponse"
-    method="POST"
-    target="hidden_iframe"
-    onsubmit="return submitLead();">
+    <form
+      action="https://docs.google.com/forms/d/e/1FAIpQLScfqUhTtyZYGUO8wdGFmm3-HIpzNtgE6qOFb4ma3dhlIKKcqw/formResponse"
+      method="POST"
+      target="hidden_iframe"
+      onsubmit="return submitLead();">
 
-    <input
-      type="text"
-      id="name"
-      name="entry.XXXXXXXX"
-      placeholder="Patient Name"
-      required />
+      <!-- Patient Name -->
+      <input
+        type="text"
+        name="entry.857300144"
+        id="name"
+        placeholder="Patient Name"
+        required>
 
-    <div class="error" id="nameError">Please enter your name</div>
+      <div class="error" id="nameError">Please enter your name</div>
 
-    <input
-      type="tel"
-      id="phone"
-      name="entry.YYYYYYYY"
-      placeholder="10-digit Mobile Number"
-      required />
+      <!-- Mobile Number -->
+      <input
+        type="tel"
+        name="entry.1142141140"
+        id="phone"
+        placeholder="10-digit Mobile Number"
+        required>
 
-    <div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
+      <div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
 
-    <button type="submit">Request Call Back</button>
-  </form>
+      <!-- Concern -->
+      <textarea
+        name="entry.296726839"
+        id="concern"
+        placeholder="Describe your pain or concern"
+        rows="4"
+        required></textarea>
 
-  <div class="footer">
-    <a href="https://terratern.com/privacy-policy/" target="_blank">Privacy Policy</a> |
-    <a href="https://terratern.com/terms-and-condition/" target="_blank">Terms</a>
+      <div class="error" id="concernError">Please describe your concern</div>
+
+      <button type="submit">Submit Enquiry</button>
+    </form>
+
+    <div class="success" id="successMsg">
+      ✅ Enquiry submitted successfully. We’ll contact you soon.
+    </div>
+
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
   </div>
-</div>
 
-<div class="modal" id="thankYou">
-  <div class="modal-box">
-    <h3>Thank You</h3>
-    <p>We will contact you shortly.</p>
-  </div>
-</div>
+  <script>
+    const phoneInput = document.getElementById("phone");
 
-<iframe name="hidden_iframe" style="display:none;"></iframe>
+    // Allow only digits in phone
+    phoneInput.addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "").slice(0, 10);
+    });
 
-<script>
-function submitLead() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
+    function submitLead() {
+      const name = document.getElementById("name").value.trim();
+      const phone = phoneInput.value.trim();
+      const concern = document.getElementById("concern").value.trim();
 
-  document.getElementById("nameError").style.display = "none";
-  document.getElementById("phoneError").style.display = "none";
+      document.getElementById("nameError").style.display = "none";
+      document.getElementById("phoneError").style.display = "none";
+      document.getElementById("concernError").style.display = "none";
 
-  if (name.length < 1) {
-    document.getElementById("nameError").style.display = "block";
-    return false;
-  }
+      if (name.length < 1) {
+        document.getElementById("nameError").style.display = "block";
+        return false;
+      }
 
-  if (!/^[0-9]{10}$/.test(phone)) {
-    document.getElementById("phoneError").style.display = "block";
-    return false;
-  }
+      if (!/^[0-9]{10}$/.test(phone)) {
+        document.getElementById("phoneError").style.display = "block";
+        return false;
+      }
 
-  document.getElementById("thankYou").style.display = "flex";
+      if (concern.length < 5) {
+        document.getElementById("concernError").style.display = "block";
+        return false;
+      }
 
-  setTimeout(() => {
-    document.getElementById("thankYou").style.display = "none";
-  }, 5000);
+      // Show success after submit
+      setTimeout(() => {
+        document.getElementById("successMsg").style.display = "block";
+        document.querySelector("form").reset();
+      }, 500);
 
-  return true;
-}
-</script>
+      return true; // submit to Google Form
+    }
+  </script>
 
 </body>
 </html>
-
