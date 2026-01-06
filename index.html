@@ -223,8 +223,19 @@ button:hover {
 ===================== */
 section {
   padding: 80px 24px;
+}
+
+.section-wrapper {
   max-width: 1200px;
   margin: auto;
+}
+
+section:nth-child(odd) {
+  background: #ffffff;
+}
+
+section:nth-child(even) {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 section h2 {
@@ -250,6 +261,8 @@ section h2::after {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .card {
@@ -421,6 +434,7 @@ footer {
 </div>
 
 <section>
+<div class="section-wrapper">
 <h2>When is it time to see a Physiotherapist?</h2>
 <div class="grid">
   <div class="card">Pain continues for several months and affects daily activities</div>
@@ -430,9 +444,11 @@ footer {
   <div class="card">Shooting, burning, tingling, or numb nerve-related pain</div>
   <div class="card">When pain starts controlling your routine instead of you controlling it</div>
 </div>
+</div>
 </section>
 
 <section>
+<div class="section-wrapper">
 <h2>Conditions We Treat</h2>
 <div class="grid">
   <div class="card">Back, neck, and joint pain</div>
@@ -444,9 +460,11 @@ footer {
   <div class="card">Headaches and long-term pain</div>
   <div class="card">Sports injuries</div>
 </div>
+</div>
 </section>
 
 <section>
+<div class="section-wrapper">
 <h2>Our Services</h2>
 <div class="grid">
   <div class="card">Orthopedic Physiotherapy</div>
@@ -454,9 +472,11 @@ footer {
   <div class="card">Neurological Physiotherapy</div>
   <div class="card">Geriatric Physiotherapy</div>
 </div>
+</div>
 </section>
 
 <section>
+<div class="section-wrapper">
 <h2>Why Choose Us</h2>
 <div class="grid">
   <div class="card">Personalized one-on-one sessions</div>
@@ -464,24 +484,29 @@ footer {
   <div class="card">Experienced & certified physiotherapists</div>
   <div class="card">Clean, calm, patient-friendly clinic</div>
 </div>
+</div>
 </section>
 
 <section>
+<div class="section-wrapper">
 <h2>Patient Reviews</h2>
 <div class="grid">
   <div class="card">⭐⭐⭐⭐⭐ "My pain reduced significantly within weeks."</div>
   <div class="card">⭐⭐⭐⭐⭐ "Very professional and caring approach."</div>
   <div class="card">⭐⭐⭐⭐⭐ "Clean clinic and clear guidance."</div>
 </div>
+</div>
 </section>
 
 <section>
+<div class="section-wrapper">
 <h2>Clinic Location</h2>
 <div class="location-box">
 <p><strong>Zanvik Physiotherapy Clinic</strong></p>
 <p>No. 88, OMBR Layout, Banaswadi, Bengaluru – 560043</p>
 <p>📞 93530 77714</p>
 <iframe src="https://www.google.com/maps?q=Zanvik%20physiotherapy%20clinic%20banaswadi&output=embed"></iframe>
+</div>
 </div>
 </section>
 
