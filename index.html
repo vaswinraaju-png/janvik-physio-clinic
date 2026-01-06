@@ -1,137 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Zanvik Physiotherapy Clinic | Book Appointment</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>Zanvik Physiotherapy | Book Appointment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #9acbfd;
-      color: #00215c;
-    }
-
-    .container {
-      max-width: 460px;
-      margin: 70px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-    }
-
-    h1 {
-      margin-bottom: 8px;
-    }
-
-    .tagline {
-      background: #f1c819;
-      color: #00215c;
-      padding: 6px 12px;
-      display: inline-block;
-      border-radius: 6px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    p {
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-
-    .error {
-      color: red;
-      font-size: 12px;
-      display: none;
-      margin-bottom: 10px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #255cc1;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #00215c;
-    }
-
-    .footer {
-      margin-top: 18px;
-      font-size: 12px;
-    }
-
-    .footer a {
-      color: #255cc1;
-      text-decoration: none;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-box {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      text-align: center;
-    }
-  </style>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #9acbfd;
+  color: #00215c;
+}
+.container {
+  max-width: 460px;
+  margin: 70px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+.tag {
+  background: #f1c819;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background: #255cc1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: #00215c;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  display: none;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+}
+.footer {
+  margin-top: 15px;
+  font-size: 12px;
+}
+.footer a {
+  color: #255cc1;
+  text-decoration: none;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
   <h1>Zanvik Physiotherapy Clinic</h1>
-  <div class="tagline">Book Your Appointment</div>
-  <p>Fill in your details and our physiotherapist will contact you shortly.</p>
+  <div class="tag">Book Appointment</div>
+  <p>Select your preferred time slot after submitting details.</p>
 
-  <form
-    action="https://docs.google.com/forms/d/e/FORM_ID/formResponse"
-    method="POST"
-    target="hidden_iframe"
-    onsubmit="return submitForm();">
-
-    <input
-      type="text"
-      id="name"
-      name="entry.123456789"
-      placeholder="Patient Name"
-      required />
-
+  <form onsubmit="return handleSubmit();">
+    <input type="text" id="name" placeholder="Patient Name" required />
     <div class="error" id="nameError">Please enter your name</div>
 
-    <input
-      type="tel"
-      id="phone"
-      name="entry.987654321"
-      placeholder="10-digit Mobile Number"
-      required />
+    <input type="tel" id="phone" placeholder="10-digit Mobile Number" required />
+    <div class="error" id="phoneError">Enter a valid 10-digit number</div>
 
-    <div class="error" id="phoneError">Enter a valid 10-digit mobile number</div>
-
-    <button type="submit">Request Appointment</button>
+    <button type="submit">Continue to Time Selection</button>
   </form>
 
   <div class="footer">
@@ -140,42 +101,39 @@
   </div>
 </div>
 
-<!-- Thank You Modal -->
 <div class="modal" id="thankYou">
   <div class="modal-box">
-    <h3>Thank You!</h3>
-    <p>Our team will contact you shortly.</p>
+    <h3>Thank You</h3>
+    <p>Redirecting to appointment calendar...</p>
   </div>
 </div>
 
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-
 <script>
-  function submitForm() {
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
+function handleSubmit() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
-    document.getElementById("nameError").style.display = "none";
-    document.getElementById("phoneError").style.display = "none";
+  document.getElementById("nameError").style.display = "none";
+  document.getElementById("phoneError").style.display = "none";
 
-    if (name.length < 1) {
-      document.getElementById("nameError").style.display = "block";
-      return false;
-    }
-
-    if (!/^[0-9]{10}$/.test(phone)) {
-      document.getElementById("phoneError").style.display = "block";
-      return false;
-    }
-
-    document.getElementById("thankYou").style.display = "flex";
-
-    setTimeout(() => {
-      window.location.href = "https://wa.me/91XXXXXXXXXX";
-    }, 5000);
-
-    return true;
+  if (name.length < 1) {
+    document.getElementById("nameError").style.display = "block";
+    return false;
   }
+
+  if (!/^[0-9]{10}$/.test(phone)) {
+    document.getElementById("phoneError").style.display = "block";
+    return false;
+  }
+
+  document.getElementById("thankYou").style.display = "flex";
+
+  setTimeout(() => {
+    window.location.href = "https://calendar.google.com/calendar/appointments/PASTE_YOUR_LINK";
+  }, 4000);
+
+  return false;
+}
 </script>
 
 </body>
