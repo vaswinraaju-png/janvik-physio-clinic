@@ -12,11 +12,13 @@
    BRAND COLORS
 ===================== */
 :root {
-  --zanvik-primary: #28406E;
-  --zanvik-secondary: #5F708D;
-  --zanvik-light: #B8D5EE;
-  --zanvik-muted: #677691;
+  --zanvik-primary: #1a5f7a;
+  --zanvik-secondary: #159895;
+  --zanvik-accent: #57c5b6;
+  --zanvik-light: #f0f9ff;
+  --zanvik-muted: #64748b;
   --zanvik-white: #FFFFFF;
+  --zanvik-dark: #0f172a;
 }
 
 /* =====================
@@ -26,12 +28,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Times New Roman", Times, serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
-  background: var(--zanvik-white);
-  color: var(--zanvik-primary);
+  background: #fafafa;
+  color: var(--zanvik-dark);
   line-height: 1.7;
 }
 
@@ -43,61 +45,96 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .header-wrap {
   max-width: 1200px;
   margin: auto;
-  padding: 16px 20px;
+  padding: 20px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .logo {
-  font-size: 22px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--zanvik-primary);
+  letter-spacing: -0.5px;
 }
 
 .phone {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--zanvik-secondary);
+  padding: 10px 20px;
+  background: var(--zanvik-light);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.phone:hover {
+  background: var(--zanvik-accent);
+  color: white;
+  transform: translateY(-2px);
 }
 
 /* =====================
    HERO + FORM
 ===================== */
 .hero {
-  background: linear-gradient(135deg, var(--zanvik-light), #eef5fb);
-  padding: 80px 20px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+  padding: 100px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 .hero-inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: auto;
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero h1 {
-  font-size: 38px;
-  margin-bottom: 12px;
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: var(--zanvik-primary);
+  font-weight: 800;
+  line-height: 1.2;
 }
 
 .hero p {
-  font-size: 18px;
+  font-size: 20px;
   color: var(--zanvik-muted);
+  margin-bottom: 8px;
 }
 
 .badges {
-  margin-top: 20px;
+  margin-top: 30px;
   display: flex;
-  gap: 18px;
+  gap: 20px;
   flex-wrap: wrap;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--zanvik-primary);
 }
 
 /* =====================
@@ -105,45 +142,66 @@ header {
 ===================== */
 .form-card {
   background: var(--zanvik-white);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
 }
 
 .form-title {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .form-title h3 {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 24px;
+  color: var(--zanvik-primary);
+  font-weight: 700;
 }
 
 .form-title p {
   color: var(--zanvik-muted);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 input, textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  font-size: 14px;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #f8fafc;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--zanvik-secondary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(21, 152, 149, 0.1);
 }
 
 textarea { resize: none; }
 
 button {
   width: 100%;
-  padding: 14px;
-  background: var(--zanvik-primary);
+  padding: 16px;
+  background: linear-gradient(135deg, var(--zanvik-primary) 0%, var(--zanvik-secondary) 100%);
   color: var(--zanvik-white);
   border: none;
-  border-radius: 30px;
-  font-size: 16px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(21, 152, 149, 0.3);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(21, 152, 149, 0.4);
 }
 
 .error {
@@ -164,28 +222,49 @@ button {
    SECTIONS
 ===================== */
 section {
-  padding: 70px 20px;
+  padding: 80px 24px;
   max-width: 1200px;
   margin: auto;
 }
 
 section h2 {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 40px;
+  font-size: 36px;
+  margin-bottom: 50px;
+  color: var(--zanvik-primary);
+  font-weight: 700;
+  position: relative;
+}
+
+section h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--zanvik-accent);
+  margin: 16px auto 0;
+  border-radius: 2px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
 }
 
 .card {
   background: var(--zanvik-white);
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  transition: all 0.3s;
+  border: 1px solid #e2e8f0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(21, 152, 149, 0.15);
+  border-color: var(--zanvik-accent);
 }
 
 /* =====================
@@ -195,18 +274,31 @@ section h2 {
   max-width: 800px;
   margin: auto;
   background: var(--zanvik-white);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+.location-box p {
+  color: var(--zanvik-muted);
+  margin-bottom: 10px;
+}
+
+.location-box p:first-child {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--zanvik-primary);
 }
 
 iframe {
   width: 100%;
-  height: 350px;
+  height: 400px;
   border: 0;
-  border-radius: 12px;
-  margin-top: 20px;
+  border-radius: 16px;
+  margin-top: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* =====================
@@ -214,28 +306,39 @@ iframe {
 ===================== */
 footer {
   text-align: center;
-  padding: 20px;
+  padding: 30px 24px;
   font-size: 14px;
   color: var(--zanvik-muted);
+  background: var(--zanvik-light);
+  border-top: 1px solid #e2e8f0;
 }
 
 /* FLOATING WHATSAPP */
 .float-wa {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #25d366;
+  bottom: 24px;
+  right: 24px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
   color: #fff;
-  padding: 15px 18px;
-  border-radius: 50%;
-  font-size: 22px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  padding: 16px 20px;
+  border-radius: 50px;
+  font-size: 24px;
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.float-wa:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px rgba(37, 211, 102, 0.5);
 }
 
 /* RESPONSIVE */
 @media(max-width:900px) {
   .hero-inner { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 30px; }
+  .hero h1 { font-size: 36px; }
+  .hero { padding: 60px 20px; }
+  section { padding: 60px 20px; }
 }
 </style>
 </head>
@@ -264,7 +367,7 @@ footer {
     <div class="form-card">
       <div class="form-title">
         <h3>Book Your Physiotherapy Appointment</h3>
-        <p>Fill in your details. We’ll contact you shortly.</p>
+        <p>Fill in your details. We'll contact you shortly.</p>
       </div>
 
       <form
@@ -298,7 +401,7 @@ footer {
 <h2>When is it time to see a Physiotherapist?</h2>
 <div class="grid">
   <div class="card">Pain continues for several months and affects daily activities</div>
-  <div class="card">Back, neck, or joint pain doesn’t improve even after regular pain medicines</div>
+  <div class="card">Back, neck, or joint pain doesn't improve even after regular pain medicines</div>
   <div class="card">Pain does not settle weeks after an injury or accident</div>
   <div class="card">Repeated headaches or migraines not relieved by usual treatment</div>
   <div class="card">Shooting, burning, tingling, or numb nerve-related pain</div>
@@ -314,7 +417,7 @@ footer {
   <div class="card">Bone, joint & muscle problems</div>
   <div class="card">Nerve and muscle problems</div>
   <div class="card">Post-surgery recovery</div>
-  <div class="card">Women’s health concerns</div>
+  <div class="card">Women's health concerns</div>
   <div class="card">Headaches and long-term pain</div>
   <div class="card">Sports injuries</div>
 </div>
@@ -343,9 +446,9 @@ footer {
 <section>
 <h2>Patient Reviews</h2>
 <div class="grid">
-  <div class="card">⭐⭐⭐⭐⭐ “My pain reduced significantly within weeks.”</div>
-  <div class="card">⭐⭐⭐⭐⭐ “Very professional and caring approach.”</div>
-  <div class="card">⭐⭐⭐⭐⭐ “Clean clinic and clear guidance.”</div>
+  <div class="card">⭐⭐⭐⭐⭐ "My pain reduced significantly within weeks."</div>
+  <div class="card">⭐⭐⭐⭐⭐ "Very professional and caring approach."</div>
+  <div class="card">⭐⭐⭐⭐⭐ "Clean clinic and clear guidance."</div>
 </div>
 </section>
 
