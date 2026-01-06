@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Best Physiotherapy Clinic in Banaswadi, OMBR, HRBR | Zanvik</title>
+<title>Zanvik Physiotherapy Clinic | Banaswadi</title>
 <meta name="description" content="Zanvik Physiotherapy Clinic in Banaswadi offers personalized physiotherapy for pain relief, recovery, and mobility.">
 
 <style>
@@ -362,11 +362,108 @@ footer {
   box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
   transition: all 0.3s;
   z-index: 999;
+  text-decoration: none;
 }
 
 .float-wa:hover {
   transform: scale(1.1);
   box-shadow: 0 12px 40px rgba(37, 211, 102, 0.5);
+}
+
+/* SCROLL PROGRESS BAR */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--zanvik-secondary), var(--zanvik-accent));
+  z-index: 9999;
+  transition: width 0.1s ease;
+}
+
+/* BACK TO TOP BUTTON */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: linear-gradient(135deg, var(--zanvik-primary), var(--zanvik-secondary));
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+  box-shadow: 0 8px 30px rgba(26, 95, 122, 0.4);
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(26, 95, 122, 0.5);
+}
+
+/* WHATSAPP BUTTON IN SECTION */
+.wa-book-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: white;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  margin: 30px auto 0;
+  transition: all 0.3s;
+  box-shadow: 0 6px 25px rgba(37, 211, 102, 0.3);
+}
+
+.wa-book-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 35px rgba(37, 211, 102, 0.4);
+}
+
+.btn-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* FOOTER FORM */
+.footer-form-section {
+  background: linear-gradient(135deg, var(--zanvik-primary) 0%, var(--zanvik-secondary) 100%);
+  padding: 80px 24px;
+  color: white;
+}
+
+.footer-form-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.footer-form-wrapper h2 {
+  color: white;
+  margin-bottom: 16px;
+}
+
+.footer-form-wrapper h2::after {
+  background: var(--zanvik-accent);
+}
+
+.footer-form-wrapper p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 40px;
+  font-size: 18px;
 }
 
 /* RESPONSIVE */
@@ -380,6 +477,8 @@ footer {
 </head>
 
 <body>
+
+<div class="progress-bar" id="progressBar"></div>
 
 <header>
   <div class="header-wrap">
@@ -472,6 +571,9 @@ footer {
   <div class="card">Neurological Physiotherapy</div>
   <div class="card">Geriatric Physiotherapy</div>
 </div>
+<div class="btn-container">
+  <a href="https://wa.me/919353077714?text=Hi,%20I%20want%20to%20book%20an%20appointment" class="wa-book-btn">📱 Book Appointment via WhatsApp</a>
+</div>
 </div>
 </section>
 
@@ -510,13 +612,76 @@ footer {
 </div>
 </section>
 
+<div class="footer-form-section">
+  <div class="footer-form-wrapper">
+    <h2>Ready to Start Your Recovery?</h2>
+    <p>Book your appointment now and take the first step towards a pain-free life.</p>
+    
+    <div class="form-card">
+      <div class="form-title">
+        <h3>Book Your Appointment</h3>
+        <p>Fill in your details. We'll contact you shortly.</p>
+      </div>
+
+      <form
+        action="https://docs.google.com/forms/d/e/1FAIpQLScfqUhTtyZYGUO8wdGFmm3-HIpzNtgE6qOFb4ma3dhlIKKcqw/formResponse"
+        method="POST"
+        target="hidden_iframe2"
+        onsubmit="return submitLead2();">
+
+        <input type="text" name="entry.857300144" id="name2" placeholder="Patient Name" required>
+        <div class="error" id="nameError2">Please enter your name</div>
+
+        <input type="tel" name="entry.1142141140" id="phone2" placeholder="10-digit Mobile Number" required>
+        <div class="error" id="phoneError2">Enter a valid 10-digit mobile number</div>
+
+        <textarea name="entry.296726839" id="concern2" placeholder="Describe your pain or concern" rows="4" required></textarea>
+        <div class="error" id="concernError2">Please describe your concern</div>
+
+        <button type="submit">Submit</button>
+      </form>
+
+      <div class="success" id="successMsg2">
+        ✅ Redirecting you to WhatsApp…
+      </div>
+
+      <iframe name="hidden_iframe2" style="display:none;"></iframe>
+    </div>
+  </div>
+</div>
+
 <footer>
 © 2026 Zanvik Physiotherapy Clinic · Designed for patient care & comfort
 </footer>
 
+<div class="back-to-top" id="backToTop">↑</div>
+
 <a class="float-wa" href="https://wa.me/919353077714">💬</a>
 
 <script>
+// Scroll Progress Bar
+window.addEventListener('scroll', () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById('progressBar').style.width = scrolled + '%';
+});
+
+// Back to Top Button
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  if (window.pageYOffset > 300) {
+    backToTop.classList.add('show');
+  } else {
+    backToTop.classList.remove('show');
+  }
+});
+
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Form 1 validation
 const phoneInput=document.getElementById("phone");
 phoneInput.addEventListener("input",()=>{phoneInput.value=phoneInput.value.replace(/\D/g,'').slice(0,10);});
 
@@ -536,6 +701,32 @@ if(concern.length<5){document.getElementById("concernError").style.display="bloc
 setTimeout(()=>{
 document.getElementById("successMsg").style.display="block";
 document.querySelector("form").reset();
+setTimeout(()=>{window.location.href="https://chat.whatsapp.com/Lmegx9nKkL6IQGHgKlcaac";},1500);
+},500);
+
+return true;
+}
+
+// Form 2 validation (Footer)
+const phoneInput2=document.getElementById("phone2");
+phoneInput2.addEventListener("input",()=>{phoneInput2.value=phoneInput2.value.replace(/\D/g,'').slice(0,10);});
+
+function submitLead2(){
+const name=document.getElementById("name2").value.trim();
+const phone=phoneInput2.value.trim();
+const concern=document.getElementById("concern2").value.trim();
+
+document.getElementById("nameError2").style.display="none";
+document.getElementById("phoneError2").style.display="none";
+document.getElementById("concernError2").style.display="none";
+
+if(name.length<1){document.getElementById("nameError2").style.display="block";return false;}
+if(!/^\d{10}$/.test(phone)){document.getElementById("phoneError2").style.display="block";return false;}
+if(concern.length<5){document.getElementById("concernError2").style.display="block";return false;}
+
+setTimeout(()=>{
+document.getElementById("successMsg2").style.display="block";
+document.querySelectorAll("form")[1].reset();
 setTimeout(()=>{window.location.href="https://chat.whatsapp.com/Lmegx9nKkL6IQGHgKlcaac";},1500);
 },500);
 
