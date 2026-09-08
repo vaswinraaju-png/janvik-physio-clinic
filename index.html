@@ -705,7 +705,7 @@ async function runBots(){
 
 // ═══ FETCH PRICE — Massive → ExRate/Frankfurter (forex) / Alpaca (crypto) fallback ═══
 // ═══ DELTA EXCHANGE WEBSOCKET — true realtime crypto ═══
-const DELTA_WS_URL='wss://socket.delta.exchange';
+const DELTA_WS_URL='wss://socket.india.delta.exchange';
 const DELTA_SYMBOLS={'BTC/USD':'BTCUSD','ETH/USD':'ETHUSD','SOL/USD':'SOLUSD'};
 let wsReconnectTimer=null;
 
@@ -719,39 +719,55 @@ function connectDeltaWs(){
       deltaWsReady=true;
       priceSource='Delta WS';
       addFeed('SYS','<span class="fup">Delta WebSocket connected — realtime ticks active</span>','#22c55e');
-      // Subscribe to v2/ticker for each symbol
+      // Subscribe all symbols in one message — correct Delta India format
       const symbols=MODES['crypto'].pairs.map(p=>DELTA_SYMBOLS[p]);
-      symbols.forEach(sym=>{
-        deltaWs.send(JSON.stringify({type:'subscribe',payload:{channels:[{name:'v2/ticker',symbols:[sym]}]}}));
-      });
+      const subMsg={type:'subscribe',payload:{channels:[{name:'v2/ticker',symbols:symbols}]}};
+      deltaWs.send(JSON.stringify(subMsg));
+      addFeed('SYS',`<span class="finfo">Subscribing: ${symbols.join(', ')}</span>`,'#a855f7');
+      // Heartbeat ping every 30s to keep connection alive
+      if(wsReconnectTimer)clearTimeout(wsReconnectTimer);
+      const heartbeat=setInterval(()=>{
+        if(!isRunning||!deltaWs||deltaWs.readyState!==WebSocket.OPEN){clearInterval(heartbeat);return}
+        deltaWs.send(JSON.stringify({type:'heartbeat'}));
+      },30000);
       // Show tick counter instead of countdown
-      document.getElementById('countdown').textContent='●';
+      document.getElementById('countdown').textContent='0';
       document.querySelector('.countdown-ring').firstChild.textContent='TICKS ';
     };
+    let rawMsgCount=0;
     deltaWs.onmessage=(evt)=>{
       if(!isRunning)return;
       try{
         const msg=JSON.parse(evt.data);
-        if(msg.type==='subscriptions'){addFeed('SYS',`<span class="fup">Subscribed: ${JSON.stringify(msg.subscriptions?.map(s=>s.symbols)||[])}</span>`,'#22c55e');return}
+        // Log first 3 raw messages to feed for debugging
+        if(rawMsgCount<3){
+          rawMsgCount++;
+          addFeed('SYS',`<span class="finfo">WS msg: ${JSON.stringify(msg).slice(0,120)}</span>`,'#a855f7');
+        }
+        // Handle subscription ack
+        if(msg.type==='subscriptions'){
+          const syms=msg.subscriptions?.flatMap(s=>s.symbols)||[];
+          addFeed('SYS',`<span class="fup">Subscribed to: ${syms.join(', ')||'(check raw msgs above)'}</span>`,'#22c55e');
+          return;
+        }
+        // Handle ticker — Delta sends type='v2/ticker' with symbol field
         if(msg.type!=='v2/ticker')return;
-        const ticker=msg;
-        const sym=ticker.symbol;
-        // Map Delta symbol to our pair
+        const sym=msg.symbol;
         const ourPair=Object.keys(DELTA_SYMBOLS).find(k=>DELTA_SYMBOLS[k]===sym);
         if(!ourPair)return;
-        const price=parseFloat(ticker.mark_price||ticker.close||ticker.last_price);
+        // Delta ticker fields: mark_price, close, ltp (last trade price)
+        const price=parseFloat(msg.mark_price||msg.close||msg.ltp||msg.last_price||0);
         if(!price||isNaN(price))return;
         const prev=marketData[ourPair]?.candles?parseFloat(marketData[ourPair].candles[1]?.close||price):marketData[ourPair]?.price||price;
-        const open24=parseFloat(ticker.open||prev);
+        const open24=parseFloat(msg.open||prev);
         const change=price-open24,changePct=open24>0?((change/open24)*100):0;
         marketData[ourPair]={...marketData[ourPair]||{},price,change,changePct};
-        // Check SL/TP + update P&L on every tick
         wsTickCount++;
         document.getElementById('countdown').textContent=wsTickCount;
         Object.values(bots).forEach(b=>{checkSLTP(b);calcOpenPnl(b)});
         renderTicker();renderAggregate();renderPortfolios();
         document.getElementById('lastUpdated').textContent=`tick #${wsTickCount} ${ts()} [Delta WS] · candles ${candleLastUpdated||'pending'}`;
-      }catch(e){}
+      }catch(e){addFeed('SYS',`<span class="fwarn">WS parse err: ${e.message}</span>`,'#f59e0b')}
     };
     deltaWs.onerror=()=>{
       addFeed('SYS','<span class="fwarn">Delta WS error — retrying in 5s...</span>','#f59e0b');
@@ -761,7 +777,7 @@ function connectDeltaWs(){
       if(isRunning&&currentMode==='crypto'){
         addFeed('SYS','<span class="fwarn">Delta WS closed — reconnecting in 5s...</span>','#f59e0b');
         if(wsReconnectTimer)clearTimeout(wsReconnectTimer);
-        wsReconnectTimer=setTimeout(connectDeltaWs,5000);
+        wsReconnectTimer=setTimeout(()=>{rawMsgCount=0;connectDeltaWs()},5000);
       }
     };
   }catch(e){
