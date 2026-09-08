@@ -282,7 +282,7 @@ footer{text-align:center;padding:18px 0;color:var(--dim);font-size:8px;letter-sp
       <div class="input-group"><div class="input-label">Lot Size (units)</div><input class="input-field" id="lotSize" type="number" value="10000" min="100" step="100"/></div>
       <div class="input-group"><div class="input-label">SL Pips (TP=SL×3)</div><input class="input-field" id="slPips" type="number" value="10" min="1" max="100"/></div>
     </div>
-    <div style="margin-top:5px;font-size:8px;color:var(--muted)">1:3 R:R enforced always</div>
+    <div style="margin-top:5px;font-size:8px;color:var(--muted)">1:3 R:R enforced. Forex: 10000 units typical. Crypto: use 0.001-0.01 BTC</div>
   </div>
 
   <div class="s-section">
@@ -461,7 +461,10 @@ function switchMode(m){
   document.getElementById('modeLabel').style.color=m==='forex'?'var(--blue)':'var(--orange)';
   renderTickerShell();renderPortfolios();renderLeaderboard();
   if(equityChart){equityChart.data.labels=[];equityChart.data.datasets.forEach(d=>d.data=[]);equityChart.update('none')}
-  addFeed('SYS',`<span class="finfo">Switched to ${MODES[m].label} mode — ${MODES[m].pairs.join(' · ')}</span>`,'#3b82f6');
+  // Reset lot size for mode
+  if(m==='crypto'&&LOT_SIZE>=1000){LOT_SIZE=0.01;document.getElementById('lotSize').value='0.01'}
+  else if(m==='forex'&&LOT_SIZE<1){LOT_SIZE=10000;document.getElementById('lotSize').value='10000'}
+  addFeed('SYS',`<span class="finfo">Switched to ${MODES[m].label} mode — ${MODES[m].pairs.join(' · ')} · Lot reset to ${LOT_SIZE}</span>`,'#3b82f6');
 }
 
 // ═══ START/STOP ═══
@@ -602,7 +605,18 @@ async function getAiDecision(botName,sym,price,bars){
 }
 
 // ═══ POSITION MANAGER ═══
-function pipPnl(sym,dir,entry,cur,lots){const m=MODES[currentMode];const pipMove=dir==='LONG'?(cur-entry)/m.pip[sym]:(entry-cur)/m.pip[sym];return pipMove*(lots/10000)*m.pipVal[sym]*10000}
+function pipPnl(sym,dir,entry,cur,lots){
+  const m=MODES[currentMode];
+  if(currentMode==='crypto'){
+    // Crypto: direct USD P&L = price diff * units
+    const priceDiff=dir==='LONG'?cur-entry:entry-cur;
+    return priceDiff*lots;
+  }else{
+    // Forex: pip-based P&L
+    const pipMove=dir==='LONG'?(cur-entry)/m.pip[sym]:(entry-cur)/m.pip[sym];
+    return pipMove*(lots/10000)*m.pipVal[sym];
+  }
+}
 function checkSLTP(bot){
   for(let i=bot.positions.length-1;i>=0;i--){
     const pos=bot.positions[i];const price=marketData[pos.symbol]?.price;if(!price)continue;
@@ -930,11 +944,11 @@ function renderPortfolios(){
   const modeTag=aiModeEnabled&&aiKey?`<span class="ai-tag">AI</span>`:`<span class="manual-tag">MNL</span>`;
   el.innerHTML=Object.values(bots).map(bot=>{
     const col=BOT_COLORS[bot.name];const tot=bot.capital+bot.openPnl;const pnl=tot-STARTING_CAPITAL;const pct=(pnl/STARTING_CAPITAL)*100;const sign=pnl>=0?'+':'';
-    const openRows=bot.positions.map(pos=>{const p=marketData[pos.symbol]?.price||pos.entry;const dp=m.dp[pos.symbol]||2;const pp=pipPnl(pos.symbol,pos.dir,pos.entry,p,pos.lots);const ps=pp>=0?'+':'';const slp=(Math.abs(pos.entry-pos.sl)/(m.pip[pos.symbol]||0.0001)).toFixed(0),tpp=(Math.abs(pos.tp-pos.entry)/(m.pip[pos.symbol]||0.0001)).toFixed(0);return`<tr><td><span class="badge-open">OPEN</span>${pos.aiDecision?'<span class="badge-ai">AI</span>':''}</td><td>${pos.symbol}</td><td><span class="sig-badge ${pos.dir==='LONG'?'sig-L':'sig-S'}">${pos.dir==='LONG'?'▲L':'▼S'}</span></td><td>${pos.entry.toFixed(dp)}</td><td>${p.toFixed(dp)}</td><td class="${pp>=0?'up':'dn'}">${ps}₹${Math.abs(pp).toFixed(0)}</td><td style="font-size:7px;color:var(--muted)">${slp}/${tpp}p</td></tr>`}).join('');
+    const openRows=bot.positions.map(pos=>{const p=marketData[pos.symbol]?.price||pos.entry;const dp=m.dp[pos.symbol]||2;const pp=pipPnl(pos.symbol,pos.dir,pos.entry,p,pos.lots);const ps=pp>=0?'+':'';const slp=currentMode==='crypto'?Math.abs(pos.entry-pos.sl).toFixed(2):((Math.abs(pos.entry-pos.sl)/(m.pip[pos.symbol]||0.0001)).toFixed(0)+'p'),tpp=currentMode==='crypto'?Math.abs(pos.tp-pos.entry).toFixed(2):((Math.abs(pos.tp-pos.entry)/(m.pip[pos.symbol]||0.0001)).toFixed(0)+'p');return`<tr><td><span class="badge-open">OPEN</span>${pos.aiDecision?'<span class="badge-ai">AI</span>':''}</td><td>${pos.symbol}</td><td><span class="sig-badge ${pos.dir==='LONG'?'sig-L':'sig-S'}">${pos.dir==='LONG'?'▲L':'▼S'}</span></td><td>${pos.entry.toFixed(dp)}</td><td>${p.toFixed(dp)}</td><td class="${pp>=0?'up':'dn'}">${ps}₹${Math.abs(pp).toFixed(0)}</td><td style="font-size:7px;color:var(--muted)">${slp}/${tpp}p</td></tr>`}).join('');
     const closedRows=bot.closedTrades.slice(0,5).map(t=>{const dp=m.dp[t.symbol]||2;const ts2=t.pnl>=0?'+':'';return`<tr><td><span class="badge-closed">${t.closeReason}</span>${t.aiDecision?'<span class="badge-ai">AI</span>':''}</td><td>${t.symbol}</td><td><span class="sig-badge ${t.dir==='LONG'?'sig-L':'sig-S'}">${t.dir==='LONG'?'▲L':'▼S'}</span></td><td>${t.entry.toFixed(dp)}</td><td>${(t.closePrice||t.entry).toFixed(dp)}</td><td class="${t.pnl>=0?'up':'dn'}">${ts2}₹${Math.abs(t.pnl).toFixed(0)}</td><td style="font-size:7px;color:var(--muted)">${t.closeTime||'—'}</td></tr>`}).join('');
     const allRows=openRows+closedRows;
     const tableHtml=allRows?`<table class="trades-table"><thead><tr><th>ST</th><th>PAIR</th><th>DIR</th><th>ENTRY</th><th>NOW</th><th>P&L</th><th>SL/TP</th></tr></thead><tbody>${allRows}</tbody></table>`:`<div class="no-trades">No trades yet</div>`;
-    return`<div class="pf-card"><div class="pf-header" onclick="toggleTrades('${bot.name}')"><div class="bot-avatar" style="background:${col}">${bot.name}</div><div class="pf-info"><div class="pf-botname">${bot.name} ${modeTag}</div><div class="pf-strategy">${BOT_STRATEGIES[bot.name]}</div></div><div class="pf-pnl"><div class="pf-pnl-val" style="color:${pnl>=0?'var(--up)':'var(--dn)'}">${sign}₹${Math.abs(pnl).toFixed(0)}</div><div class="pf-pnl-pct">${sign}${pct.toFixed(2)}%</div></div><div class="pf-expand" id="exp-${bot.name}">▼</div></div><div class="pf-meta"><div class="pf-meta-item"><div class="pf-meta-label">CAPITAL</div><div class="pf-meta-val">₹${Math.round(tot/1000)}K</div></div><div class="pf-meta-item"><div class="pf-meta-label">OPEN P&L</div><div class="pf-meta-val ${bot.openPnl>=0?'up':'dn'}">${bot.openPnl>=0?'+':''}₹${Math.abs(bot.openPnl).toFixed(0)}</div></div><div class="pf-meta-item"><div class="pf-meta-label">W/L</div><div class="pf-meta-val">${bot.wins}/${bot.losses}</div></div><div class="pf-meta-item"><div class="pf-meta-label">LOT</div><div class="pf-meta-val">${(LOT_SIZE/1000).toFixed(0)}K</div></div></div><div class="trades-body" id="trades-${bot.name}">${tableHtml}</div></div>`;
+    return`<div class="pf-card"><div class="pf-header" onclick="toggleTrades('${bot.name}')"><div class="bot-avatar" style="background:${col}">${bot.name}</div><div class="pf-info"><div class="pf-botname">${bot.name} ${modeTag}</div><div class="pf-strategy">${BOT_STRATEGIES[bot.name]}</div></div><div class="pf-pnl"><div class="pf-pnl-val" style="color:${pnl>=0?'var(--up)':'var(--dn)'}">${sign}₹${Math.abs(pnl).toFixed(0)}</div><div class="pf-pnl-pct">${sign}${pct.toFixed(2)}%</div></div><div class="pf-expand" id="exp-${bot.name}">▼</div></div><div class="pf-meta"><div class="pf-meta-item"><div class="pf-meta-label">CAPITAL</div><div class="pf-meta-val">₹${Math.round(tot/1000)}K</div></div><div class="pf-meta-item"><div class="pf-meta-label">OPEN P&L</div><div class="pf-meta-val ${bot.openPnl>=0?'up':'dn'}">${bot.openPnl>=0?'+':''}₹${Math.abs(bot.openPnl).toFixed(0)}</div></div><div class="pf-meta-item"><div class="pf-meta-label">W/L</div><div class="pf-meta-val">${bot.wins}/${bot.losses}</div></div><div class="pf-meta-item"><div class="pf-meta-label">LOT</div><div class="pf-meta-val">${currentMode==='crypto'?LOT_SIZE:LOT_SIZE>=1000?(LOT_SIZE/1000).toFixed(0)+'K':LOT_SIZE}</div></div></div><div class="trades-body" id="trades-${bot.name}">${tableHtml}</div></div>`;
   }).join('');
 }
 function toggleTrades(n){document.getElementById('trades-'+n).classList.toggle('open');const e=document.getElementById('exp-'+n);e.textContent=e.textContent==='▼'?'▲':'▼'}
