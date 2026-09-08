@@ -8,160 +8,158 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:#f8f9fb;color:#111;font-family:'Inter',sans-serif;font-size:13px;min-height:100vh}
-
-/* ── LAYOUT ── */
+body{background:#f7f8fa;color:#111;font-family:'Inter',sans-serif;font-size:13px;min-height:100vh}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
 
-/* ── HEADER ── */
+/* HEADER */
 header{display:flex;align-items:center;justify-content:space-between;padding:18px 0 16px;border-bottom:1px solid #e8eaed;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-mark{width:34px;height:34px;background:#111;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;letter-spacing:-.5px;flex-shrink:0}
+.logo-mark{width:34px;height:34px;background:#111;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0}
 .logo-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
-.logo-sub{font-size:10px;color:#888;margin-top:1px}
+.logo-sub{font-size:10px;color:#999;margin-top:1px}
 .header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif;letter-spacing:.1px}
-.btn-primary{background:#111;color:#fff}
-.btn-primary:hover{background:#333}
-.btn-danger{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
-.btn-danger:hover{background:#fecaca}
-.btn-ghost{background:#fff;color:#555;border:1px solid #e2e4e8}
-.btn-ghost:hover{background:#f5f5f5;border-color:#ccc}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif}
+.btn-primary{background:#111;color:#fff}.btn-primary:hover{background:#333}
+.btn-stop{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}.btn-stop:hover{background:#fee2e2}
+.btn-ghost{background:#fff;color:#555;border:1px solid #e2e4e8}.btn-ghost:hover{background:#f5f5f5}
 .btn-sm{padding:5px 10px;font-size:10px;border-radius:6px}
+.btn-analyse{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:10px;padding:5px 11px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600}
+.btn-analyse:hover{background:#dbeafe}
 
-/* ── TOGGLE ── */
-.toggle-wrap{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:#555}
-.toggle{position:relative;width:38px;height:21px;cursor:pointer;flex-shrink:0}
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#555}
+.toggle{position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0}
-.toggle-track{position:absolute;inset:0;background:#ddd;border-radius:11px;transition:background .2s}
-.toggle-track::after{content:'';position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-track{position:absolute;inset:0;background:#ddd;border-radius:10px;transition:background .2s}
+.toggle-track::after{content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .toggle input:checked+.toggle-track{background:#16a34a}
-.toggle input:checked+.toggle-track::after{transform:translateX(17px)}
-.toggle-label{user-select:none}
+.toggle input:checked+.toggle-track::after{transform:translateX(16px)}
 
-/* ── STATUS DOT ── */
-.ws-status{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:5px 10px;background:#fff;border:1px solid #e2e4e8;border-radius:20px;color:#888}
+/* WS STATUS */
+.ws-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:5px 10px;background:#fff;border:1px solid #e2e4e8;border-radius:20px;color:#999}
 .ws-dot{width:7px;height:7px;border-radius:50%;background:#ddd;flex-shrink:0;transition:background .3s}
-.ws-dot.connected{background:#16a34a;animation:pulse 2s infinite}
-.ws-dot.connecting{background:#f59e0b;animation:pulse .8s infinite}
+.ws-dot.live{background:#16a34a;animation:blink 2s infinite}
+.ws-dot.connecting{background:#f59e0b;animation:blink .7s infinite}
 .ws-dot.error{background:#dc2626}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── TICKER STRIP ── */
-.ticker-strip{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.ticker-card{flex:1;min-width:140px;background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px;transition:box-shadow .2s}
-.ticker-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.ticker-symbol{font-size:10px;font-weight:600;color:#888;letter-spacing:.5px;margin-bottom:6px}
-.ticker-price{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:3px;font-variant-numeric:tabular-nums}
-.ticker-change{font-size:11px;font-weight:500}
-.ticker-change.up{color:#16a34a}.ticker-change.dn{color:#dc2626}
-.ticker-ticks{font-size:9px;color:#bbb;margin-top:4px}
+/* TICKER */
+.ticker-strip{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.ticker-card{flex:1;min-width:140px;background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px}
+.ticker-sym{font-size:9px;font-weight:600;color:#999;letter-spacing:.6px;margin-bottom:5px}
+.ticker-price{font-size:22px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-bottom:2px}
+.ticker-chg{font-size:10px;font-weight:500}
+.ticker-chg.up{color:#16a34a}.ticker-chg.dn{color:#dc2626}
+.ticker-meta{font-size:9px;color:#ccc;margin-top:3px}
 
-/* ── SECTION HEADER ── */
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.section-title{font-size:12px;font-weight:600;color:#333;letter-spacing:.2px}
-.section-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:#f0f0f0;color:#888}
+/* STATS */
+.stats-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.stat{flex:1;min-width:110px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:12px 14px}
+.stat-lbl{font-size:9px;font-weight:600;color:#bbb;letter-spacing:.4px;margin-bottom:4px}
+.stat-val{font-size:18px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.stat-val.up{color:#16a34a}.stat-val.dn{color:#dc2626}
+.stat-sub{font-size:9px;color:#bbb;margin-top:2px}
 
-/* ── POSITIONS ── */
-.positions-empty{background:#fff;border:1px dashed #e2e4e8;border-radius:12px;padding:32px;text-align:center;color:#bbb;font-size:12px}
-.positions-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.pos-card{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.pos-symbol{font-size:11px;font-weight:700;min-width:60px}
-.pos-dir{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px}
-.pos-dir.long{background:#dcfce7;color:#16a34a}
-.pos-dir.short{background:#fee2e2;color:#dc2626}
-.pos-entry{font-size:11px;color:#888;min-width:80px}
-.pos-current{font-size:11px;font-weight:600;min-width:80px}
-.pos-pnl{font-size:13px;font-weight:700;min-width:70px}
+/* SECTION */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sec-title{font-size:11px;font-weight:600;color:#444;letter-spacing:.2px}
+.sec-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:#f0f0f0;color:#888}
+.sec-actions{display:flex;align-items:center;gap:6px}
+
+/* POSITIONS */
+.pos-empty{background:#fff;border:1px dashed #e2e4e8;border-radius:12px;padding:28px;text-align:center;color:#ccc;font-size:11px;margin-bottom:18px}
+.pos-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.pos-card{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:14px 16px}
+.pos-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pos-sym{font-size:12px;font-weight:700;min-width:65px}
+.dir-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px}
+.dir-badge.long{background:#dcfce7;color:#16a34a}
+.dir-badge.short{background:#fee2e2;color:#dc2626}
+.pos-entry{font-size:11px;color:#999}
+.pos-now{font-size:11px;font-weight:600}
+.pos-pnl{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .pos-pnl.up{color:#16a34a}.pos-pnl.dn{color:#dc2626}
-.pos-meta{font-size:9px;color:#bbb;flex:1}
-.pos-close{margin-left:auto}
-.pos-reason{font-size:9px;color:#aaa;width:100%;padding-top:6px;border-top:1px solid #f5f5f5;margin-top:6px}
+.pos-sltp{font-size:9px;color:#bbb;flex:1}
+.pos-bottom{margin-top:8px;padding-top:8px;border-top:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pos-reason{font-size:9px;color:#aaa;flex:1}
+.pos-tags{display:flex;gap:4px;flex-wrap:wrap}
+.pos-tag{font-size:8px;padding:2px 5px;border-radius:4px;font-weight:600}
+.tag-be{background:#fef3c7;color:#d97706}
+.tag-trail{background:#e0f2fe;color:#0284c7}
+.tag-fib{background:#f3e8ff;color:#7c3aed}
 
-/* ── AI FEED ── */
-.ai-feed-wrap{background:#fff;border:1px solid #e8eaed;border-radius:12px;overflow:hidden;margin-bottom:20px}
-.ai-feed-head{padding:12px 16px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-.ai-feed-head:hover{background:#fafafa}
-.ai-feed-toggle{font-size:10px;color:#bbb}
-.ai-feed-body{max-height:260px;overflow-y:auto}
-.ai-item{display:flex;gap:10px;padding:10px 16px;border-bottom:1px solid #f8f8f8;align-items:flex-start}
+/* FIB LEVELS */
+.fib-row{margin-top:6px;padding-top:6px;border-top:1px solid #f5f5f5;display:flex;gap:6px;flex-wrap:wrap}
+.fib-level{font-size:8px;padding:2px 5px;border-radius:4px;background:#fafafa;border:1px solid #f0f0f0;color:#888;font-variant-numeric:tabular-nums}
+.fib-level.nearest{background:#f3e8ff;border-color:#d8b4fe;color:#7c3aed;font-weight:600}
+
+/* AI FEED */
+.ai-wrap{background:#fff;border:1px solid #e8eaed;border-radius:12px;overflow:hidden;margin-bottom:18px}
+.ai-head{padding:11px 16px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.ai-head:hover{background:#fafafa}
+.ai-toggle-icon{font-size:10px;color:#ccc}
+.ai-body{max-height:280px;overflow-y:auto}
+.ai-item{display:flex;gap:9px;padding:9px 16px;border-bottom:1px solid #f9f9f9;align-items:flex-start}
 .ai-item:last-child{border-bottom:none}
-.ai-time{font-size:9px;color:#bbb;min-width:40px;padding-top:1px;font-variant-numeric:tabular-nums}
+.ai-time{font-size:9px;color:#ccc;min-width:38px;padding-top:1px;font-variant-numeric:tabular-nums}
 .ai-icon{font-size:13px;flex-shrink:0}
 .ai-text{flex:1;font-size:11px;color:#444;line-height:1.5}
-.ai-text strong{color:#111;font-weight:600}
-.ai-text .signal-long{color:#16a34a;font-weight:700}
-.ai-text .signal-short{color:#dc2626;font-weight:700}
-.ai-text .signal-wait{color:#888;font-weight:600}
+.ai-text b{color:#111}
+.sl{color:#16a34a;font-weight:700}.ss{color:#dc2626;font-weight:700}.sw{color:#888;font-weight:600}
 
-/* ── TRADE HISTORY ── */
-.history-wrap{background:#fff;border:1px solid #e8eaed;border-radius:12px;overflow:hidden;margin-bottom:20px}
-.history-head{padding:12px 16px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
-.history-table{width:100%;border-collapse:collapse;font-size:11px}
-.history-table th{padding:9px 16px;text-align:left;font-size:9px;font-weight:600;color:#aaa;letter-spacing:.5px;border-bottom:1px solid #f0f0f0;background:#fafafa}
-.history-table td{padding:10px 16px;border-bottom:1px solid #f8f8f8;color:#444}
-.history-table tr:last-child td{border-bottom:none}
-.history-table td.up{color:#16a34a;font-weight:600}
-.history-table td.dn{color:#dc2626;font-weight:600}
-.history-empty{padding:24px 16px;text-align:center;color:#bbb;font-size:11px}
+/* HISTORY */
+.hist-wrap{background:#fff;border:1px solid #e8eaed;border-radius:12px;overflow:hidden;margin-bottom:18px}
+.hist-head{padding:11px 16px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between}
+.hist-table{width:100%;border-collapse:collapse;font-size:11px}
+.hist-table th{padding:8px 16px;text-align:left;font-size:9px;font-weight:600;color:#bbb;letter-spacing:.5px;border-bottom:1px solid #f5f5f5;background:#fafafa}
+.hist-table td{padding:9px 16px;border-bottom:1px solid #f9f9f9;color:#555}
+.hist-table tr:last-child td{border-bottom:none}
+.hist-table td.up{color:#16a34a;font-weight:600}.hist-table td.dn{color:#dc2626;font-weight:600}
+.hist-empty{padding:24px;text-align:center;color:#ccc;font-size:11px}
 .badge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px}
 .badge-tp{background:#dcfce7;color:#16a34a}
 .badge-sl{background:#fee2e2;color:#dc2626}
 .badge-manual{background:#e0f2fe;color:#0284c7}
+.badge-aiexit{background:#f3e8ff;color:#7c3aed}
 .badge-long{background:#dcfce7;color:#16a34a}
 .badge-short{background:#fee2e2;color:#dc2626}
 
-/* ── SETTINGS DRAWER ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+/* SETTINGS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
 .overlay.open{opacity:1;pointer-events:all}
-.drawer{position:fixed;top:0;right:-440px;width:400px;max-width:100vw;height:100vh;background:#fff;z-index:101;padding:24px 20px;overflow-y:auto;transition:right .25s ease;box-shadow:-4px 0 24px rgba(0,0,0,.08)}
+.drawer{position:fixed;top:0;right:-440px;width:400px;max-width:100vw;height:100vh;background:#fff;z-index:101;padding:22px 20px;overflow-y:auto;transition:right .25s ease;box-shadow:-4px 0 20px rgba(0,0,0,.08)}
 .drawer.open{right:0}
-.drawer-title{font-size:16px;font-weight:700;margin-bottom:3px}
-.drawer-sub{font-size:10px;color:#888;margin-bottom:22px}
-.field-group{margin-bottom:18px}
-.field-label{font-size:10px;font-weight:600;color:#555;margin-bottom:5px;display:flex;align-items:center;gap:5px}
-.field-label .required{color:#dc2626;font-size:9px}
-.field-label .note{color:#aaa;font-weight:400}
-.field-wrap{display:flex;gap:5px}
-.field-input{flex:1;background:#f8f9fb;border:1px solid #e2e4e8;border-radius:7px;padding:8px 11px;color:#111;font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border-color .15s}
-.field-input:focus{border-color:#111;background:#fff}
-.field-input::placeholder{color:#ccc}
-.btn-reveal{background:#f0f0f0;border:1px solid #e2e4e8;border-radius:7px;padding:8px 10px;font-size:10px;cursor:pointer;color:#666;font-family:'Inter',sans-serif;white-space:nowrap}
-.btn-reveal:hover{background:#e8e8e8}
+.drawer-title{font-size:16px;font-weight:700;margin-bottom:2px}
+.drawer-sub{font-size:10px;color:#999;margin-bottom:20px}
+.fgroup{margin-bottom:16px}
+.flabel{font-size:10px;font-weight:600;color:#666;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.fnote{color:#bbb;font-weight:400}
+.fwrap{display:flex;gap:5px}
+.finput{flex:1;background:#f7f8fa;border:1px solid #e2e4e8;border-radius:7px;padding:8px 11px;color:#111;font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border-color .15s}
+.finput:focus{border-color:#111;background:#fff}
+.finput::placeholder{color:#ccc}
+.btn-rev{background:#f0f0f0;border:1px solid #e2e4e8;border-radius:7px;padding:8px 10px;font-size:10px;cursor:pointer;color:#666;font-family:'Inter',sans-serif}
 .provider-tabs{display:flex;gap:4px;margin-bottom:10px}
-.provider-tab{flex:1;background:#f8f9fb;border:1px solid #e2e4e8;border-radius:7px;padding:6px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;color:#888;transition:all .15s;font-family:'Inter',sans-serif}
-.provider-tab.active{background:#111;color:#fff;border-color:#111}
-.section-divider{height:1px;background:#f0f0f0;margin:18px 0}
-.drawer-save{width:100%;background:#111;color:#fff;border:none;border-radius:8px;padding:11px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;margin-top:6px}
+.ptab{flex:1;background:#f7f8fa;border:1px solid #e2e4e8;border-radius:7px;padding:6px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;color:#999;transition:all .15s;font-family:'Inter',sans-serif}
+.ptab.active{background:#111;color:#fff;border-color:#111}
+.sdivider{height:1px;background:#f0f0f0;margin:16px 0}
+.stoggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.stoggle-info .st-title{font-size:11px;font-weight:600;color:#333}
+.stoggle-info .st-desc{font-size:9px;color:#aaa;margin-top:2px}
+.drawer-save{width:100%;background:#111;color:#fff;border:none;border-radius:8px;padding:11px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;margin-top:8px}
 .drawer-save:hover{background:#333}
 
-/* ── STATS ROW ── */
-.stats-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.stat-card{flex:1;min-width:100px;background:#fff;border:1px solid #e8eaed;border-radius:10px;padding:12px 14px}
-.stat-label{font-size:9px;font-weight:600;color:#aaa;letter-spacing:.4px;margin-bottom:4px}
-.stat-val{font-size:18px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-.stat-val.up{color:#16a34a}.stat-val.dn{color:#dc2626}
-.stat-sub{font-size:9px;color:#aaa;margin-top:2px}
-
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:#f8f9fb}
+::-webkit-scrollbar-track{background:#f7f8fa}
 ::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:2px}
-
-footer{text-align:center;padding:20px 0;color:#ccc;font-size:9px;letter-spacing:1.5px;border-top:1px solid #f0f0f0}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.fade-up{animation:fadeUp .25s ease forwards}
-
-/* ── MOBILE ── */
+footer{text-align:center;padding:20px 0;color:#ddd;font-size:9px;letter-spacing:1.5px;border-top:1px solid #f0f0f0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .2s ease forwards}
 @media(max-width:640px){
-  .ticker-strip{gap:8px}
-  .ticker-card{min-width:calc(50% - 4px)}
-  .pos-card{gap:8px}
-  .stats-row{gap:8px}
-  .stat-card{min-width:calc(50% - 4px)}
+  .ticker-card{min-width:calc(50% - 5px)}
+  .stat{min-width:calc(50% - 5px)}
 }
 </style>
 </head>
@@ -174,51 +172,52 @@ footer{text-align:center;padding:20px 0;color:#ccc;font-size:9px;letter-spacing:
 <!-- SETTINGS DRAWER -->
 <div class="drawer" id="drawer">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px">
-    <div><div class="drawer-title">Settings</div><div class="drawer-sub">Keys saved to your browser only. Never sent to any server.</div></div>
-    <button onclick="closeSettings()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:3px">✕</button>
+    <div><div class="drawer-title">Settings</div><div class="drawer-sub">Keys saved to browser only. Never leave your device.</div></div>
+    <button onclick="closeSettings()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#bbb;padding:3px">✕</button>
   </div>
 
-  <div class="field-group">
-    <div class="field-label">Delta Exchange Read Key <span class="required">required</span></div>
-    <div class="field-wrap">
-      <input class="field-input" id="deltaKey" type="password" placeholder="Delta read API key..."/>
-      <button class="btn-reveal" onclick="rev('deltaKey',this)">Show</button>
-    </div>
-    <div style="font-size:9px;color:#aaa;margin-top:4px">wss://socket.india.delta.exchange · public market data</div>
+  <div class="fgroup">
+    <div class="flabel">Delta Exchange Read Key</div>
+    <div class="fwrap"><input class="finput" id="fDeltaKey" type="password" placeholder="Delta read key..."/><button class="btn-rev" onclick="rev('fDeltaKey',this)">Show</button></div>
+    <div style="font-size:9px;color:#bbb;margin-top:4px">wss://socket.india.delta.exchange · public market data</div>
   </div>
 
-  <div class="section-divider"></div>
+  <div class="sdivider"></div>
 
-  <div class="field-group">
-    <div class="field-label">AI Provider</div>
+  <div class="fgroup">
+    <div class="flabel">AI Provider</div>
     <div class="provider-tabs">
-      <button class="provider-tab active" id="tab-claude" onclick="selectProvider('claude')">Claude</button>
-      <button class="provider-tab" id="tab-openai" onclick="selectProvider('openai')">OpenAI</button>
-      <button class="provider-tab" id="tab-gemini" onclick="selectProvider('gemini')">Gemini</button>
+      <button class="ptab active" id="tab-claude" onclick="selectProvider('claude')">Claude</button>
+      <button class="ptab" id="tab-openai" onclick="selectProvider('openai')">OpenAI</button>
+      <button class="ptab" id="tab-gemini" onclick="selectProvider('gemini')">Gemini</button>
     </div>
-    <div class="field-label"><span id="aiKeyLabel">Anthropic API Key</span> <span class="note">(for AI trading decisions)</span></div>
-    <div class="field-wrap">
-      <input class="field-input" id="aiKey" type="password" placeholder="AI provider API key..."/>
-      <button class="btn-reveal" onclick="rev('aiKey',this)">Show</button>
-    </div>
+    <div class="flabel"><span id="aiKeyLbl">Anthropic API Key</span> <span class="fnote">saved locally</span></div>
+    <div class="fwrap"><input class="finput" id="fAiKey" type="password" placeholder="AI API key..."/><button class="btn-rev" onclick="rev('fAiKey',this)">Show</button></div>
   </div>
 
-  <div class="section-divider"></div>
+  <div class="sdivider"></div>
 
-  <div class="field-group">
-    <div class="field-label">Lot Size <span class="note">(units per trade)</span></div>
-    <input class="field-input" id="lotSize" type="number" placeholder="0.001" value="0.001" step="0.001" min="0.001" style="width:100%"/>
-    <div style="font-size:9px;color:#aaa;margin-top:4px">0.001 BTC = ~$79 at current price</div>
+  <div class="fgroup">
+    <div class="flabel">Lot Size <span class="fnote">units per trade</span></div>
+    <input class="finput" id="fLot" type="number" value="0.001" step="0.001" min="0.001" style="width:100%"/>
   </div>
 
-  <div class="field-group">
-    <div class="field-label">Candle interval for AI context</div>
-    <select class="field-input" id="candleInterval" style="width:100%">
-      <option value="5">Every 5 minutes</option>
-      <option value="15" selected>Every 15 minutes</option>
-      <option value="30">Every 30 minutes</option>
-      <option value="60">Every 60 minutes</option>
-    </select>
+  <div class="sdivider"></div>
+
+  <div class="fgroup">
+    <div class="flabel">Risk Features</div>
+    <div class="stoggle-row">
+      <div class="stoggle-info"><div class="st-title">Trailing SL</div><div class="st-desc">SL moves up as price moves in your favour</div></div>
+      <label class="toggle"><input type="checkbox" id="fTrailSL" checked/><div class="toggle-track"></div></label>
+    </div>
+    <div class="stoggle-row">
+      <div class="stoggle-info"><div class="st-title">Break-even SL</div><div class="st-desc">Move SL to entry once 50% to TP</div></div>
+      <label class="toggle"><input type="checkbox" id="fBreakEven" checked/><div class="toggle-track"></div></label>
+    </div>
+    <div class="stoggle-row">
+      <div class="stoggle-info"><div class="st-title">AI Re-evaluation</div><div class="st-desc">AI reviews open positions every 3 min</div></div>
+      <label class="toggle"><input type="checkbox" id="fAiReval" checked/><div class="toggle-track"></div></label>
+    </div>
   </div>
 
   <button class="drawer-save" onclick="saveSettings()">Save Settings</button>
@@ -228,313 +227,450 @@ footer{text-align:center;padding:20px 0;color:#ccc;font-size:9px;letter-spacing:
 <header>
   <div class="logo">
     <div class="logo-mark">Δ</div>
-    <div>
-      <div class="logo-name">Delta AI Trader</div>
-      <div class="logo-sub">storiesbyachu · crypto only</div>
-    </div>
+    <div><div class="logo-name">Delta AI Trader</div><div class="logo-sub">storiesbyachu · fibonacci strategy</div></div>
   </div>
   <div class="header-actions">
-    <div class="ws-status" id="wsStatus"><div class="ws-dot" id="wsDot"></div><span id="wsLabel">Disconnected</span></div>
+    <div class="ws-pill" id="wsPill"><div class="ws-dot" id="wsDot"></div><span id="wsLbl">Offline</span></div>
     <label class="toggle-wrap">
       <label class="toggle"><input type="checkbox" id="aiToggle" onchange="onAiToggle()"/><div class="toggle-track"></div></label>
-      <span class="toggle-label" id="aiToggleLabel">AI Off</span>
+      <span id="aiToggleLbl" style="font-size:11px;font-weight:500;color:#666">AI Off</span>
     </label>
-    <button class="btn btn-primary" id="startStopBtn" onclick="toggleStartStop()">Start</button>
-    <button class="btn btn-ghost" onclick="openSettings()">⚙ Settings</button>
+    <button class="btn btn-primary" id="ssBtn" onclick="toggleSS()">Start</button>
+    <button class="btn-analyse" id="analyseBtn" onclick="manualAnalyse()" style="display:none">Analyse Now</button>
+    <button class="btn btn-ghost" onclick="openSettings()">⚙</button>
   </div>
 </header>
 
-<!-- TICKER STRIP -->
-<div class="ticker-strip" id="tickerStrip">
-  <div class="ticker-card"><div class="ticker-symbol">BTC / USD</div><div class="ticker-price" id="price-BTC">—</div><div class="ticker-change" id="chg-BTC">—</div><div class="ticker-ticks" id="ticks-BTC"></div></div>
-  <div class="ticker-card"><div class="ticker-symbol">ETH / USD</div><div class="ticker-price" id="price-ETH">—</div><div class="ticker-change" id="chg-ETH">—</div><div class="ticker-ticks" id="ticks-ETH"></div></div>
-  <div class="ticker-card"><div class="ticker-symbol">SOL / USD</div><div class="ticker-price" id="price-SOL">—</div><div class="ticker-change" id="chg-SOL">—</div><div class="ticker-ticks" id="ticks-SOL"></div></div>
+<!-- TICKER -->
+<div class="ticker-strip">
+  <div class="ticker-card"><div class="ticker-sym">BTC / USD</div><div class="ticker-price" id="pr-BTC">—</div><div class="ticker-chg" id="ch-BTC">—</div><div class="ticker-meta" id="mt-BTC"></div></div>
+  <div class="ticker-card"><div class="ticker-sym">ETH / USD</div><div class="ticker-price" id="pr-ETH">—</div><div class="ticker-chg" id="ch-ETH">—</div><div class="ticker-meta" id="mt-ETH"></div></div>
+  <div class="ticker-card"><div class="ticker-sym">SOL / USD</div><div class="ticker-price" id="pr-SOL">—</div><div class="ticker-chg" id="ch-SOL">—</div><div class="ticker-meta" id="mt-SOL"></div></div>
 </div>
 
 <!-- STATS -->
 <div class="stats-row">
-  <div class="stat-card"><div class="stat-label">TOTAL P&L</div><div class="stat-val" id="statPnl">+₹0</div><div class="stat-sub" id="statPnlPct">—</div></div>
-  <div class="stat-card"><div class="stat-label">OPEN POSITIONS</div><div class="stat-val" id="statOpen">0</div><div class="stat-sub">active</div></div>
-  <div class="stat-card"><div class="stat-label">CLOSED TRADES</div><div class="stat-val" id="statClosed">0</div><div class="stat-sub" id="statWR">—</div></div>
-  <div class="stat-card"><div class="stat-label">REALISED P&L</div><div class="stat-val" id="statRealised">₹0</div><div class="stat-sub">closed only</div></div>
+  <div class="stat"><div class="stat-lbl">TOTAL P&L</div><div class="stat-val" id="sTotalPnl">₹0</div><div class="stat-sub">open + closed</div></div>
+  <div class="stat"><div class="stat-lbl">OPEN</div><div class="stat-val" id="sOpen">0</div><div class="stat-sub">positions</div></div>
+  <div class="stat"><div class="stat-lbl">CLOSED</div><div class="stat-val" id="sClosed">0</div><div class="stat-sub" id="sWR">—</div></div>
+  <div class="stat"><div class="stat-lbl">REALISED</div><div class="stat-val" id="sRealised">₹0</div><div class="stat-sub">closed P&L</div></div>
 </div>
 
 <!-- OPEN POSITIONS -->
-<div class="section-head">
-  <div class="section-title">Open Positions</div>
-  <div class="section-badge" id="openBadge">0</div>
+<div class="sec-head">
+  <div class="sec-title">Open Positions</div>
+  <div class="sec-actions">
+    <div class="sec-badge" id="openBadge">0</div>
+  </div>
 </div>
-<div class="positions-grid" id="positionsGrid">
-  <div class="positions-empty" id="posEmpty">No open positions. Start the system and enable AI to begin trading.</div>
+<div id="posArea">
+  <div class="pos-empty" id="posEmpty">No open positions — start the system and enable AI</div>
 </div>
 
 <!-- AI FEED -->
-<div class="ai-feed-wrap">
-  <div class="ai-feed-head" onclick="toggleAiFeed()">
-    <div class="section-title">AI Reasoning</div>
-    <div class="ai-feed-toggle" id="aiFeedToggleIcon">▲ collapse</div>
+<div class="ai-wrap">
+  <div class="ai-head" onclick="toggleAiFeed()">
+    <div class="sec-title">AI Feed</div>
+    <span class="ai-toggle-icon" id="aiFeedIcon">▲</span>
   </div>
-  <div class="ai-feed-body" id="aiFeedBody">
-    <div class="ai-item"><div class="ai-time"></div><div class="ai-icon">💡</div><div class="ai-text">Enable AI and start the system to see live reasoning here.</div></div>
-  </div>
-</div>
-
-<!-- TRADE HISTORY -->
-<div class="history-wrap">
-  <div class="history-head">
-    <div class="section-title">Trade History</div>
-    <div class="section-badge" id="historyBadge">0</div>
-  </div>
-  <div id="historyBody">
-    <div class="history-empty">No closed trades yet.</div>
+  <div class="ai-body" id="aiFeedBody">
+    <div class="ai-item"><div class="ai-time"></div><div class="ai-icon">💡</div><div class="ai-text">Start and enable AI to see live reasoning here.</div></div>
   </div>
 </div>
 
-<footer>DELTA AI TRADER · STORIESBYACHU · PAPER TRADING ONLY · CRYPTO</footer>
+<!-- HISTORY -->
+<div class="hist-wrap">
+  <div class="hist-head">
+    <div class="sec-title">Trade History</div>
+    <div class="sec-badge" id="histBadge">0</div>
+  </div>
+  <div id="histBody"><div class="hist-empty">No closed trades yet.</div></div>
+</div>
+
+<footer>DELTA AI TRADER · STORIESBYACHU · FIB STRATEGY · PAPER TRADING ONLY</footer>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// STORAGE
-// ══════════════════════════════════════════════
-const LS={DELTA:'dt_delta',AI_KEY:'dt_aikey',AI_PROVIDER:'dt_aiprov',LOT:'dt_lot',CANDLE_INT:'dt_cint'};
-const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return''}};
-const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+// ══ STORAGE ══
+const LS={DK:'dt_dk',AK:'dt_ak',AP:'dt_ap',LOT:'dt_lot',TRAIL:'dt_trail',BE:'dt_be',REVAL:'dt_reval'};
+const lg=k=>{try{return localStorage.getItem(k)||''}catch(e){return''}};
+const ls=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 
-// ══════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════
-const DEFAULT_DELTA='VBR3ThPR3exRrXRZh1WNrHS3FvEsBu';
+// ══ DEFAULTS ══
+const DEF_DELTA='VBR3ThPR3exRrXRZh1WNrHS3FvEsBu';
 const PAIRS=['BTC/USD','ETH/USD','SOL/USD'];
-const DELTA_SYM={'BTC/USD':'BTCUSD','ETH/USD':'ETHUSD','SOL/USD':'SOLUSD'};
+const DSYM={'BTC/USD':'BTCUSD','ETH/USD':'ETHUSD','SOL/USD':'SOLUSD'};
+const DP={'BTC/USD':1,'ETH/USD':2,'SOL/USD':3};
 const DELTA_REST='https://api.india.delta.exchange/v2';
-const WA='917094956963';
+const FIB_LEVELS=[0,0.236,0.382,0.5,0.618,0.786,1];
+const AI_INTERVAL=3*60*1000; // 3 minutes
 
-// ══════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════
-let isRunning=false,aiEnabled=false;
-let deltaWs=null,wsReady=false,wsReconnTimer=null;
-let deltaKey=DEFAULT_DELTA,aiKey='',aiProvider='claude';
-let lotSize=0.001,candleRefreshMin=15;
-let tickCounts={},marketData={},candles={};
-let positions=[],closedTrades=[];
-let aiItems=[];
-let candleTimer=null;
-let isFetchingCandles=false;
+// ══ STATE ══
+let running=false,aiOn=false;
+let ws=null,wsReady=false,wsReconnT=null;
+let deltaKey=DEF_DELTA,aiKey='',aiProv='claude',lotSize=0.001;
+let trailSL=true,breakEven=true,aiReval=true;
+let mkt={},candles={},fibs={},ticks={};
+let positions=[],closed=[];
+let aiLog=[];
+let aiTimer=null;
+let aiFeedOpen=true;
 const ts=()=>new Date().toTimeString().slice(0,8);
 
-// ══════════════════════════════════════════════
-// SETTINGS
-// ══════════════════════════════════════════════
-function openSettings(){
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-  loadToUI();
+// ══ CONFIG ══
+function loadConfig(){
+  deltaKey=lg(LS.DK)||DEF_DELTA;
+  aiKey=lg(LS.AK);
+  aiProv=lg(LS.AP)||'claude';
+  lotSize=parseFloat(lg(LS.LOT)||'0.001');
+  trailSL=lg(LS.TRAIL)!=='0';
+  breakEven=lg(LS.BE)!=='0';
+  aiReval=lg(LS.REVAL)!=='0';
 }
-function closeSettings(){
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-function rev(id,btn){
-  const el=document.getElementById(id);
-  if(el.type==='password'){el.type='text';btn.textContent='Hide'}
-  else{el.type='password';btn.textContent='Show'}
-}
+
+// ══ SETTINGS UI ══
+function openSettings(){document.getElementById('drawer').classList.add('open');document.getElementById('overlay').classList.add('open');loadToUI()}
+function closeSettings(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open')}
+function rev(id,btn){const el=document.getElementById(id);if(el.type==='password'){el.type='text';btn.textContent='Hide'}else{el.type='password';btn.textContent='Show'}}
 function selectProvider(p){
-  aiProvider=p;
-  ['claude','openai','gemini'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('active',x===p);
-  });
-  const lbls={claude:'Anthropic API Key',openai:'OpenAI API Key',gemini:'Gemini API Key'};
-  document.getElementById('aiKeyLabel').textContent=lbls[p];
+  aiProv=p;
+  ['claude','openai','gemini'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('active',x===p));
+  document.getElementById('aiKeyLbl').textContent={claude:'Anthropic API Key',openai:'OpenAI API Key',gemini:'Gemini API Key'}[p];
 }
 function loadToUI(){
-  document.getElementById('deltaKey').value=lsGet(LS.DELTA)||DEFAULT_DELTA;
-  document.getElementById('aiKey').value=lsGet(LS.AI_KEY);
-  document.getElementById('lotSize').value=lsGet(LS.LOT)||'0.001';
-  document.getElementById('candleInterval').value=lsGet(LS.CANDLE_INT)||'15';
-  const prov=lsGet(LS.AI_PROVIDER)||'claude';
-  selectProvider(prov);
+  document.getElementById('fDeltaKey').value=lg(LS.DK)||DEF_DELTA;
+  document.getElementById('fAiKey').value=lg(LS.AK);
+  document.getElementById('fLot').value=lg(LS.LOT)||'0.001';
+  document.getElementById('fTrailSL').checked=lg(LS.TRAIL)!=='0';
+  document.getElementById('fBreakEven').checked=lg(LS.BE)!=='0';
+  document.getElementById('fAiReval').checked=lg(LS.REVAL)!=='0';
+  selectProvider(lg(LS.AP)||'claude');
 }
 function saveSettings(){
-  lsSet(LS.DELTA,document.getElementById('deltaKey').value.trim()||DEFAULT_DELTA);
-  lsSet(LS.AI_KEY,document.getElementById('aiKey').value.trim());
-  lsSet(LS.LOT,document.getElementById('lotSize').value);
-  lsSet(LS.CANDLE_INT,document.getElementById('candleInterval').value);
-  lsSet(LS.AI_PROVIDER,aiProvider);
-  loadConfig();
-  closeSettings();
-  addAiItem('⚙','Settings saved','');
-  if(isRunning){stopAll();setTimeout(startAll,300)}
-}
-function loadConfig(){
-  deltaKey=lsGet(LS.DELTA)||DEFAULT_DELTA;
-  aiKey=lsGet(LS.AI_KEY);
-  aiProvider=lsGet(LS.AI_PROVIDER)||'claude';
-  lotSize=parseFloat(lsGet(LS.LOT)||'0.001');
-  candleRefreshMin=parseInt(lsGet(LS.CANDLE_INT)||'15');
+  ls(LS.DK,document.getElementById('fDeltaKey').value.trim()||DEF_DELTA);
+  ls(LS.AK,document.getElementById('fAiKey').value.trim());
+  ls(LS.LOT,document.getElementById('fLot').value);
+  ls(LS.TRAIL,document.getElementById('fTrailSL').checked?'1':'0');
+  ls(LS.BE,document.getElementById('fBreakEven').checked?'1':'0');
+  ls(LS.REVAL,document.getElementById('fAiReval').checked?'1':'0');
+  ls(LS.AP,aiProv);
+  loadConfig();closeSettings();
+  addLog('⚙','Settings saved','');
+  if(running){stopAll();setTimeout(startAll,400)}
 }
 
-// ══════════════════════════════════════════════
-// AI TOGGLE
-// ══════════════════════════════════════════════
+// ══ AI TOGGLE ══
 function onAiToggle(){
-  aiEnabled=document.getElementById('aiToggle').checked;
-  document.getElementById('aiToggleLabel').textContent=aiEnabled?'AI On':'AI Off';
-  if(aiEnabled&&!aiKey){addAiItem('⚠','No AI key set — add it in Settings','');document.getElementById('aiToggle').checked=false;aiEnabled=false;document.getElementById('aiToggleLabel').textContent='AI Off';return}
-  addAiItem(aiEnabled?'🟢':'⏸',aiEnabled?'AI trading enabled — will analyse on next candle refresh':'AI trading paused — existing positions remain open','');
+  aiOn=document.getElementById('aiToggle').checked;
+  if(aiOn&&!aiKey){
+    addLog('⚠','No AI key — add it in Settings','');
+    document.getElementById('aiToggle').checked=false;aiOn=false;
+    document.getElementById('aiToggleLbl').textContent='AI Off';return;
+  }
+  document.getElementById('aiToggleLbl').textContent=aiOn?'AI On':'AI Off';
+  if(aiOn&&running){
+    addLog('🟢','AI enabled — scanning market now','');
+    runAI();
+    if(aiTimer)clearInterval(aiTimer);
+    aiTimer=setInterval(runAI,AI_INTERVAL);
+  }else if(!aiOn){
+    clearInterval(aiTimer);aiTimer=null;
+    addLog('⏸','AI paused — open positions remain active','');
+  }
 }
 
-// ══════════════════════════════════════════════
-// START / STOP
-// ══════════════════════════════════════════════
-function toggleStartStop(){if(isRunning)stopAll();else startAll()}
+// ══ START / STOP ══
+function toggleSS(){if(running)stopAll();else startAll()}
 function startAll(){
-  isRunning=true;
-  updateStartStopBtn();
-  connectDeltaWs();
-  fetchAllCandles();
-  candleTimer=setInterval(fetchAllCandles,candleRefreshMin*60*1000);
-  addAiItem('▶','System started — connecting to Delta Exchange WebSocket','');
+  running=true;
+  document.getElementById('ssBtn').textContent='Stop';document.getElementById('ssBtn').className='btn btn-stop';
+  document.getElementById('analyseBtn').style.display='';
+  addLog('▶','System starting — connecting to Delta Exchange','');
+  connectWS();
+  fetchAllCandles().then(()=>{
+    if(aiOn&&running)runAI();
+  });
 }
 function stopAll(){
-  isRunning=false;
-  clearInterval(candleTimer);candleTimer=null;
-  if(wsReconnTimer){clearTimeout(wsReconnTimer);wsReconnTimer=null}
-  if(deltaWs){try{deltaWs.close()}catch(e){}deltaWs=null;wsReady=false}
-  updateStartStopBtn();
-  setWsStatus('disconnected');
-  addAiItem('⏹','System stopped — all connections closed','');
+  running=false;
+  clearInterval(aiTimer);aiTimer=null;
+  if(wsReconnT){clearTimeout(wsReconnT);wsReconnT=null}
+  if(ws){try{ws.close()}catch(e){}ws=null;wsReady=false}
+  document.getElementById('ssBtn').textContent='Start';document.getElementById('ssBtn').className='btn btn-primary';
+  document.getElementById('analyseBtn').style.display='none';
+  setWsUI('off');
+  addLog('⏹','System stopped','');
 }
-function updateStartStopBtn(){
-  const btn=document.getElementById('startStopBtn');
-  if(isRunning){btn.textContent='Stop';btn.className='btn btn-danger'}
-  else{btn.textContent='Start';btn.className='btn btn-primary'}
+function manualAnalyse(){
+  if(!running||!aiOn){addLog('⚠','Start system and enable AI first','');return}
+  addLog('🔍','Manual analysis triggered','');
+  runAI();
 }
 
-// ══════════════════════════════════════════════
-// WEBSOCKET — Delta India
-// ══════════════════════════════════════════════
-function setWsStatus(state){
-  const dot=document.getElementById('wsDot');
-  const lbl=document.getElementById('wsLabel');
+// ══ WS ══
+function setWsUI(state){
+  const dot=document.getElementById('wsDot'),lbl=document.getElementById('wsLbl');
   dot.className='ws-dot';
-  if(state==='connected'){dot.classList.add('connected');lbl.textContent='Live'}
-  else if(state==='connecting'){dot.classList.add('connecting');lbl.textContent='Connecting...'}
+  if(state==='live'){dot.classList.add('live');lbl.textContent='Live'}
+  else if(state==='connecting'){dot.classList.add('connecting');lbl.textContent='Connecting'}
   else if(state==='error'){dot.classList.add('error');lbl.textContent='Error'}
-  else{lbl.textContent='Disconnected'}
+  else{lbl.textContent='Offline'}
 }
-function connectDeltaWs(){
-  if(!isRunning)return;
-  if(deltaWs&&(deltaWs.readyState===WebSocket.OPEN||deltaWs.readyState===WebSocket.CONNECTING))return;
-  setWsStatus('connecting');
+function connectWS(){
+  if(!running)return;
+  if(ws&&(ws.readyState===WebSocket.OPEN||ws.readyState===WebSocket.CONNECTING))return;
+  setWsUI('connecting');
   try{
-    deltaWs=new WebSocket('wss://socket.india.delta.exchange');
-    let heartbeat=null;
-    deltaWs.onopen=()=>{
-      wsReady=true;setWsStatus('connected');
-      // Subscribe ticker all pairs
-      const syms=PAIRS.map(p=>DELTA_SYM[p]);
-      deltaWs.send(JSON.stringify({type:'subscribe',payload:{channels:[{name:'v2/ticker',symbols:syms}]}}));
-      addAiItem('🔗',`WebSocket connected · subscribed ${syms.join(', ')}`,ts());
-      // Heartbeat
-      heartbeat=setInterval(()=>{
-        if(deltaWs&&deltaWs.readyState===WebSocket.OPEN)deltaWs.send(JSON.stringify({type:'heartbeat'}));
-      },30000);
+    ws=new WebSocket('wss://socket.india.delta.exchange');
+    let hb=null;
+    ws.onopen=()=>{
+      wsReady=true;setWsUI('live');
+      const syms=PAIRS.map(p=>DSYM[p]);
+      ws.send(JSON.stringify({type:'subscribe',payload:{channels:[{name:'v2/ticker',symbols:syms}]}}));
+      addLog('🔗',`Connected · subscribed ${syms.join(', ')}`,ts());
+      hb=setInterval(()=>{if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'heartbeat'}))},30000);
     };
-    deltaWs.onmessage=evt=>{
-      if(!isRunning)return;
+    ws.onmessage=evt=>{
+      if(!running)return;
       try{
         const msg=JSON.parse(evt.data);
-        if(msg.type==='v2/ticker'){
-          const sym=msg.symbol;
-          const pair=Object.keys(DELTA_SYM).find(k=>DELTA_SYM[k]===sym);
-          if(!pair)return;
-          // Delta ticker fields
-          const price=parseFloat(msg.mark_price||msg.close||msg.ltp||0);
-          if(!price||isNaN(price))return;
-          const open=parseFloat(msg.open_24h||msg.open||price);
-          const change=price-open;
-          const changePct=open>0?((change/open)*100):0;
-          const prev=marketData[pair]?.price;
-          marketData[pair]={price,change,changePct,open};
-          tickCounts[pair]=(tickCounts[pair]||0)+1;
-          updateTicker(pair);
-          // Check SL/TP on every tick
-          checkAllSLTP();
-          updateStats();
-          renderPositions();
-        }
+        if(msg.type!=='v2/ticker')return;
+        const pair=Object.keys(DSYM).find(k=>DSYM[k]===msg.symbol);
+        if(!pair)return;
+        const price=parseFloat(msg.mark_price||msg.close||msg.ltp||0);
+        if(!price||isNaN(price))return;
+        const open=parseFloat(msg.open_24h||msg.open||price);
+        mkt[pair]={price,change:price-open,changePct:open>0?((price-open)/open*100):0};
+        ticks[pair]=(ticks[pair]||0)+1;
+        updateTicker(pair);
+        onTick(pair,price);
       }catch(e){}
     };
-    deltaWs.onerror=()=>{setWsStatus('error')};
-    deltaWs.onclose=()=>{
-      wsReady=false;deltaWs=null;
-      if(heartbeat)clearInterval(heartbeat);
-      setWsStatus('disconnected');
-      if(isRunning){
-        addAiItem('⚠','WebSocket disconnected — reconnecting in 5s',ts());
-        wsReconnTimer=setTimeout(connectDeltaWs,5000);
-      }
+    ws.onerror=()=>setWsUI('error');
+    ws.onclose=()=>{
+      wsReady=false;ws=null;if(hb)clearInterval(hb);setWsUI('off');
+      if(running){addLog('⚠','WS disconnected — reconnecting in 5s',ts());wsReconnT=setTimeout(connectWS,5000)}
     };
-  }catch(e){setWsStatus('error');addAiItem('❌',`WS error: ${e.message}`,ts())}
+  }catch(e){setWsUI('error');addLog('❌',`WS error: ${e.message}`,ts())}
 }
 
-// ══════════════════════════════════════════════
-// TICKER UI
-// ══════════════════════════════════════════════
+// ══ TICKER UI ══
 function updateTicker(pair){
-  const d=marketData[pair];if(!d)return;
-  const key=pair.split('/')[0];
-  const priceEl=document.getElementById('price-'+key);
-  const chgEl=document.getElementById('chg-'+key);
-  const tickEl=document.getElementById('ticks-'+key);
-  if(!priceEl)return;
-  const dp=pair==='BTC/USD'?1:pair==='SOL/USD'?3:2;
-  priceEl.textContent=d.price.toFixed(dp);
+  const d=mkt[pair];if(!d)return;
+  const k=pair.split('/')[0];
+  const pe=document.getElementById('pr-'+k),ce=document.getElementById('ch-'+k),me=document.getElementById('mt-'+k);
+  if(!pe)return;
+  pe.textContent=d.price.toFixed(DP[pair]);
   const sign=d.change>=0?'+':'';
-  chgEl.textContent=`${sign}${d.change.toFixed(dp)} (${sign}${d.changePct.toFixed(2)}%)`;
-  chgEl.className='ticker-change '+(d.change>=0?'up':'dn');
-  tickEl.textContent=`${tickCounts[pair]||0} ticks`;
+  ce.textContent=`${sign}${d.change.toFixed(DP[pair])} (${sign}${d.changePct.toFixed(2)}%)`;
+  ce.className='ticker-chg '+(d.change>=0?'up':'dn');
+  // Show nearest fib level
+  const f=fibs[pair];
+  if(f){
+    const nearest=findNearestFib(d.price,f);
+    me.textContent=`${ticks[pair]||0} ticks · Fib: ${nearest}`;
+  }else{me.textContent=`${ticks[pair]||0} ticks`}
 }
 
-// ══════════════════════════════════════════════
-// CANDLES — Delta REST
-// ══════════════════════════════════════════════
+// ══ ON TICK — SL/TP + Trail + Break-even ══
+function onTick(pair,price){
+  let changed=false;
+  for(let i=positions.length-1;i>=0;i--){
+    const p=positions[i];if(p.pair!==pair)continue;
+    const dp=DP[pair];
+    // Break-even SL
+    if(breakEven&&!p.breakEvenDone){
+      const dist=Math.abs(p.tp-p.entry);
+      const halfway=p.dir==='LONG'?p.entry+dist*0.5:p.entry-dist*0.5;
+      const atHalfway=p.dir==='LONG'?price>=halfway:price<=halfway;
+      if(atHalfway){
+        p.sl=p.entry;p.breakEvenDone=true;
+        addLog('🔒',`Break-even SL set for ${pair} ${p.dir} → SL moved to entry ${p.entry.toFixed(dp)}`,ts());
+        changed=true;
+      }
+    }
+    // Trailing SL
+    if(trailSL){
+      const origDist=Math.abs(p.entry-p.origSL);
+      if(p.dir==='LONG'){
+        const newSL=price-origDist;
+        if(newSL>p.sl){p.sl=newSL;changed=true}
+      }else{
+        const newSL=price+origDist;
+        if(newSL<p.sl){p.sl=newSL;changed=true}
+      }
+    }
+    // Check SL/TP
+    if(p.dir==='LONG'){
+      if(price<=p.sl){closePos(i,'SL Hit');continue}
+      if(price>=p.tp){closePos(i,'TP Hit');continue}
+    }else{
+      if(price>=p.sl){closePos(i,'SL Hit');continue}
+      if(price<=p.tp){closePos(i,'TP Hit');continue}
+    }
+  }
+  updateStats();
+  if(changed)renderPositions();
+  else updatePnlInline();
+}
+
+// ══ CANDLES + FIB ══
 async function fetchAllCandles(){
-  if(!isRunning||isFetchingCandles)return;
-  isFetchingCandles=true;
-  try{
-    await Promise.all(PAIRS.map(fetchCandles));
-    if(aiEnabled&&aiKey&&isRunning)await runAIForAll();
-  }finally{isFetchingCandles=false}
+  await Promise.all(PAIRS.map(fetchCandles));
 }
 async function fetchCandles(pair){
   try{
-    const sym=DELTA_SYM[pair];
+    const sym=DSYM[pair];
     const end=Math.floor(Date.now()/1000);
-    const start=end-60*24*3600; // 60 days back
+    const start=end-90*24*3600;
     const r=await fetch(`${DELTA_REST}/history/candles?resolution=1d&symbol=${sym}&start=${start}&end=${end}`);
     const d=await r.json();
-    if(d.result&&d.result.length>0){
-      candles[pair]=d.result.sort((a,b)=>b.time-a.time); // newest first
+    if(d.result&&d.result.length>5){
+      candles[pair]=d.result.sort((a,b)=>b.time-a.time);
+      calcFib(pair);
     }
-  }catch(e){}
+  }catch(e){addLog('⚠',`Candle fetch failed for ${pair}: ${e.message}`,ts())}
+}
+function calcFib(pair){
+  const c=candles[pair];if(!c||c.length<5)return;
+  // Use last 20 candles for swing high/low
+  const recent=c.slice(0,20);
+  const high=Math.max(...recent.map(b=>parseFloat(b.high)));
+  const low=Math.min(...recent.map(b=>parseFloat(b.low)));
+  const range=high-low;
+  const dp=DP[pair];
+  // Fib retracement levels (from high to low for downtrend, low to high for uptrend)
+  const levels={};
+  FIB_LEVELS.forEach(f=>{
+    levels[f]={
+      ret:parseFloat((high-range*f).toFixed(dp)),  // retracement
+      ext:parseFloat((low+range*f).toFixed(dp))    // extension
+    };
+  });
+  fibs[pair]={high,low,range,levels,dp};
+}
+function findNearestFib(price,fib){
+  if(!fib)return'—';
+  let nearest=null,minDist=Infinity;
+  FIB_LEVELS.forEach(f=>{
+    const dist=Math.abs(fib.levels[f].ret-price);
+    if(dist<minDist){minDist=dist;nearest=`${(f*100).toFixed(1)}% (${fib.levels[f].ret})`}
+  });
+  return nearest||'—';
+}
+function getFibContext(pair){
+  const f=fibs[pair];if(!f)return'No fib data.';
+  const price=mkt[pair]?.price;
+  const dp=DP[pair];
+  const lvls=FIB_LEVELS.map(fl=>`${(fl*100).toFixed(1)}%: ret=${f.levels[fl].ret} ext=${f.levels[fl].ext}`).join(', ');
+  return `Swing High: ${f.high.toFixed(dp)}, Swing Low: ${f.low.toFixed(dp)}, Range: ${f.range.toFixed(dp)}
+Fibonacci levels → ${lvls}
+Current price vs nearest fib: ${price?findNearestFib(price,f):'unknown'}`;
 }
 
-// ══════════════════════════════════════════════
-// INDICATORS
-// ══════════════════════════════════════════════
+// ══ AI ══
+async function runAI(){
+  if(!running||!aiOn||!aiKey)return;
+  addLog('🔍',`Scanning all pairs — Fibonacci + indicator analysis`,ts());
+  for(const pair of PAIRS){
+    if(!running||!aiOn)break;
+    await aiAnalysePair(pair);
+    await aiReevaluatePositions(pair);
+  }
+}
+async function aiAnalysePair(pair){
+  const price=mkt[pair]?.price;if(!price)return;
+  if(positions.find(p=>p.pair===pair&&!p.closing))return; // already has position
+  const c=candles[pair];if(!c||c.length<10)return;
+  const closes=[...c].reverse().map(b=>parseFloat(b.close));
+  const rsi=calcRSI(closes);
+  const ema9=calcEMA(closes,9),ema21=calcEMA(closes,21);
+  const dp=DP[pair];
+  const fibCtx=getFibContext(pair);
+  const prompt=`You are a crypto scalper using Fibonacci retracement strategy for ${pair}.
+Current price: ${price.toFixed(dp)}
+RSI(14): ${rsi.toFixed(1)}
+EMA9: ${ema9?.toFixed(dp)||'N/A'}, EMA21: ${ema21?.toFixed(dp)||'N/A'}
+${fibCtx}
+Lot size: ${lotSize}
+
+Strategy rules:
+- LONG if price bounces off 0.618 or 0.5 fib support with RSI < 60 and EMA9 > EMA21
+- SHORT if price rejects at 0.382 or 0.236 fib resistance with RSI > 55 and EMA9 < EMA21
+- Set SL just beyond the fib level (buffer = 0.3% of price)
+- Set TP at next fib level in trade direction (minimum 2x SL distance)
+- WAIT if no clear fib confluence
+
+Reply ONLY valid JSON:
+{"signal":"LONG","entry":${price.toFixed(dp)},"sl":number,"tp":number,"fib_level":"0.618","reason":"one sentence"}
+or {"signal":"SHORT","entry":${price.toFixed(dp)},"sl":number,"tp":number,"fib_level":"0.382","reason":"one sentence"}
+or {"signal":"WAIT","reason":"one sentence"}`;
+  const dec=await callAI(prompt);
+  if(!dec)return;
+  const sig=dec.signal?.toUpperCase();
+  const icon=sig==='LONG'?'📈':sig==='SHORT'?'📉':'⏸';
+  const sigClass=sig==='LONG'?'sl':sig==='SHORT'?'ss':'sw';
+  addLog(icon,`<b>${pair}</b> → <span class="${sigClass}">${sig}</span>${dec.fib_level?' @ Fib '+dec.fib_level:''} — ${dec.reason||''}`,ts());
+  if((sig==='LONG'||sig==='SHORT')&&dec.entry&&dec.sl&&dec.tp){
+    openPos(pair,sig,dec.entry,dec.sl,dec.tp,dec.reason||'',dec.fib_level||'');
+  }
+}
+async function aiReevaluatePositions(pair){
+  if(!aiReval||!aiOn)return;
+  const openForPair=positions.filter(p=>p.pair===pair);
+  for(const pos of openForPair){
+    const price=mkt[pair]?.price;if(!price)continue;
+    const pnl=calcPnl(pos,price);const dp=DP[pair];
+    const prompt=`Review this open position for ${pair}:
+Dir: ${pos.dir}, Entry: ${pos.entry.toFixed(dp)}, Current: ${price.toFixed(dp)}, SL: ${pos.sl.toFixed(dp)}, TP: ${pos.tp.toFixed(dp)}
+Unrealised P&L: ${pnl>=0?'+':''}$${pnl.toFixed(4)}, Lot: ${pos.lots}
+${getFibContext(pair)}
+RSI: ${calcRSI([...((candles[pair]||[]).slice(0,30)).reverse().map(b=>parseFloat(b.close))]).toFixed(1)}
+
+Should we: hold, tighten_sl (provide new sl), or exit_now?
+Reply ONLY valid JSON:
+{"action":"hold","reason":"..."}
+or {"action":"tighten_sl","new_sl":number,"reason":"..."}
+or {"action":"exit_now","reason":"..."}`;
+    const dec=await callAI(prompt);
+    if(!dec||!dec.action)continue;
+    if(dec.action==='exit_now'){
+      addLog('🚪',`AI Exit ${pos.dir} ${pair} — ${dec.reason||''}`,ts());
+      const idx=positions.indexOf(pos);if(idx!==-1)closePos(idx,'AI Exit');
+    }else if(dec.action==='tighten_sl'&&dec.new_sl){
+      const better=(pos.dir==='LONG'&&dec.new_sl>pos.sl)||(pos.dir==='SHORT'&&dec.new_sl<pos.sl);
+      if(better){pos.sl=dec.new_sl;addLog('🎯',`AI tightened SL for ${pair} ${pos.dir} → ${dec.new_sl.toFixed(dp)} — ${dec.reason||''}`,ts());renderPositions()}
+    }else{
+      addLog('✋',`AI holds ${pair} ${pos.dir} — ${dec.reason||''}`,ts());
+    }
+  }
+}
+
+// ══ AI CALL ══
+async function callAI(prompt){
+  try{
+    if(aiProv==='claude'){
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':aiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:200,messages:[{role:'user',content:prompt}]})});
+      const d=await r.json();
+      return JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
+    }else if(aiProv==='openai'){
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${aiKey}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:200,messages:[{role:'user',content:prompt}],response_format:{type:'json_object'}})});
+      const d=await r.json();return JSON.parse(d.choices?.[0]?.message?.content||'{}');
+    }else if(aiProv==='gemini'){
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:200}})});
+      const d=await r.json();return JSON.parse((d.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
+    }
+  }catch(e){addLog('❌',`AI error: ${e.message}`,ts());return null}
+}
+
+// ══ INDICATORS ══
 function calcEMA(data,period){
-  if(data.length<period)return null;
-  const k=2/(period+1);
-  let ema=data.slice(0,period).reduce((a,b)=>a+b,0)/period;
-  for(let i=period;i<data.length;i++)ema=data[i]*k+ema*(1-k);
-  return ema;
+  if(!data||data.length<period)return null;
+  const k=2/(period+1);let ema=data.slice(0,period).reduce((a,b)=>a+b,0)/period;
+  for(let i=period;i<data.length;i++)ema=data[i]*k+ema*(1-k);return ema;
 }
 function calcRSI(closes,period=14){
-  if(closes.length<=period)return 50;
+  if(!closes||closes.length<=period)return 50;
   let ag=0,al=0;
   for(let i=1;i<=period;i++){const d=closes[i]-closes[i-1];d>0?ag+=d:al-=d}
   ag/=period;al/=period;
@@ -544,232 +680,157 @@ function calcRSI(closes,period=14){
   }
   return al===0?100:100-(100/(1+ag/al));
 }
-function getIndicators(pair){
-  const c=candles[pair];if(!c||c.length<10)return null;
-  const closes=c.map(b=>parseFloat(b.close));
-  const highs=c.map(b=>parseFloat(b.high));
-  const lows=c.map(b=>parseFloat(b.low));
-  const prev=c[1];
-  const pH=parseFloat(prev.high),pL=parseFloat(prev.low),pC=parseFloat(prev.close);
-  const pivot=(pH+pL+pC)/3,bc=(pH+pL)/2,tc=2*pivot-bc;
-  const r1=2*pivot-pL,s1=2*pivot-pH;
-  const ema9=calcEMA([...closes].reverse(),9);
-  const ema21=calcEMA([...closes].reverse(),21);
-  const rsi=calcRSI([...closes].reverse());
-  return{pivot,bc,tc,r1,s1,ema9,ema21,rsi,latestClose:closes[0]};
-}
 
-// ══════════════════════════════════════════════
-// AI DECISION
-// ══════════════════════════════════════════════
-async function runAIForAll(){
-  for(const pair of PAIRS){
-    if(!isRunning||!aiEnabled)break;
-    await runAIForPair(pair);
-  }
-}
-async function runAIForPair(pair){
-  if(!aiKey||!isRunning||!aiEnabled)return;
-  const price=marketData[pair]?.price;
-  if(!price)return;
-  // Don't open more than 1 position per pair
-  if(positions.find(p=>p.pair===pair))return;
-  const ind=getIndicators(pair);
-  const dp=pair==='BTC/USD'?1:pair==='SOL/USD'?3:2;
-  const context=`You are a crypto scalper AI for ${pair}. Current live price: ${price.toFixed(dp)}.
-${ind?`Indicators:
-- RSI(14): ${ind.rsi.toFixed(1)}
-- EMA9: ${ind.ema9?.toFixed(dp)||'N/A'}, EMA21: ${ind.ema21?.toFixed(dp)||'N/A'}
-- CPR Pivot: ${ind.pivot.toFixed(dp)}, R1: ${ind.r1.toFixed(dp)}, S1: ${ind.s1.toFixed(dp)}
-- Yesterday close: ${ind.latestClose?.toFixed(dp)||'N/A'}`:'No candle data yet.'}
-Lot size: ${lotSize} units.
-Decide a trade. Set SL and TP based on key levels — TP should be at least 2x SL distance.
-Respond ONLY with valid JSON, no other text:
-{"signal":"LONG","entry":${price.toFixed(dp)},"sl":number,"tp":number,"reason":"one clear sentence"}
-or {"signal":"SHORT","entry":${price.toFixed(dp)},"sl":number,"tp":number,"reason":"one clear sentence"}
-or {"signal":"WAIT","reason":"one clear sentence"}`;
-  try{
-    let dec=null;
-    if(aiProvider==='claude'){
-      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':aiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:150,messages:[{role:'user',content:context}]})});
-      const d=await r.json();
-      dec=JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
-    }else if(aiProvider==='openai'){
-      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${aiKey}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:150,messages:[{role:'user',content:context}],response_format:{type:'json_object'}})});
-      const d=await r.json();
-      dec=JSON.parse(d.choices?.[0]?.message?.content||'{}');
-    }else if(aiProvider==='gemini'){
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:context}]}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:150}})});
-      const d=await r.json();
-      dec=JSON.parse((d.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
-    }
-    if(!dec||!dec.signal)return;
-    const signal=dec.signal.toUpperCase();
-    addAiItem(signal==='LONG'?'📈':signal==='SHORT'?'📉':'⏸',`<strong>${pair}</strong> → <span class="signal-${signal.toLowerCase()}">${signal}</span> — ${dec.reason||''}`,ts());
-    if((signal==='LONG'||signal==='SHORT')&&dec.entry&&dec.sl&&dec.tp){
-      openPosition(pair,signal,dec.entry,dec.sl,dec.tp,dec.reason||'');
-    }
-  }catch(e){addAiItem('❌',`AI error for ${pair}: ${e.message}`,ts())}
-}
-
-// ══════════════════════════════════════════════
-// POSITIONS
-// ══════════════════════════════════════════════
-function openPosition(pair,dir,entry,sl,tp,reason){
-  const id=Date.now()+'_'+pair;
-  positions.push({id,pair,dir,entry,sl,tp,lots:lotSize,reason,openTime:ts(),openedAt:Date.now()});
-  addAiItem('✅',`Opened ${dir} ${pair} @ ${entry} · SL:${sl} · TP:${tp}`,ts());
+// ══ POSITIONS ══
+function openPos(pair,dir,entry,sl,tp,reason,fibLevel){
+  positions.push({id:Date.now()+'_'+pair,pair,dir,entry,sl,tp,origSL:sl,lots:lotSize,reason,fibLevel,openTime:ts(),breakEvenDone:false});
+  addLog('✅',`Opened <b>${dir}</b> ${pair} @ ${entry.toFixed(DP[pair])} · SL:${sl.toFixed(DP[pair])} · TP:${tp.toFixed(DP[pair])}${fibLevel?' · Fib '+fibLevel:''}`,ts());
   renderPositions();updateStats();
 }
-function closePosition(id,reason){
-  const idx=positions.findIndex(p=>p.id===id);
-  if(idx===-1)return;
+function closePos(idx,reason){
+  if(idx<0||idx>=positions.length)return;
   const pos=positions[idx];
-  const price=marketData[pos.pair]?.price||pos.entry;
+  const price=mkt[pos.pair]?.price||pos.entry;
   const pnl=calcPnl(pos,price);
-  closedTrades.unshift({...pos,closePrice:price,pnl,closeReason:reason,closeTime:ts()});
+  closed.unshift({...pos,closePrice:price,pnl,closeReason:reason,closeTime:ts()});
   positions.splice(idx,1);
-  addAiItem(pnl>=0?'💰':'📉',`Closed ${pos.dir} ${pos.pair} @ ${price.toFixed(getDp(pos.pair))} · P&L: ${pnl>=0?'+':''}₹${Math.abs(pnl).toFixed(2)} · ${reason}`,ts());
+  const sign=pnl>=0?'+':'';
+  addLog(pnl>=0?'💰':'📉',`Closed ${pos.dir} ${pos.pair} @ ${price.toFixed(DP[pos.pair])} · <b>${sign}$${Math.abs(pnl).toFixed(4)}</b> · ${reason}`,ts());
   renderPositions();renderHistory();updateStats();
+  // Re-scan this pair immediately after close
+  if(aiOn&&running)setTimeout(()=>aiAnalysePair(pos.pair),2000);
 }
-function checkAllSLTP(){
-  for(let i=positions.length-1;i>=0;i--){
-    const pos=positions[i];
-    const price=marketData[pos.pair]?.price;
-    if(!price)continue;
-    if(pos.dir==='LONG'){
-      if(price<=pos.sl)closePosition(pos.id,'SL Hit');
-      else if(price>=pos.tp)closePosition(pos.id,'TP Hit');
-    }else{
-      if(price>=pos.sl)closePosition(pos.id,'SL Hit');
-      else if(price<=pos.tp)closePosition(pos.id,'TP Hit');
-    }
-  }
+function manualClose(id){
+  const idx=positions.findIndex(p=>p.id===id);
+  if(idx!==-1)closePos(idx,'Manual Close');
 }
-function calcPnl(pos,currentPrice){
-  const diff=pos.dir==='LONG'?currentPrice-pos.entry:pos.entry-currentPrice;
-  return diff*pos.lots;
-}
-function getDp(pair){return pair==='BTC/USD'?1:pair==='SOL/USD'?3:2}
+function calcPnl(pos,price){return(pos.dir==='LONG'?price-pos.entry:pos.entry-price)*pos.lots}
 
-// ══════════════════════════════════════════════
-// RENDER POSITIONS
-// ══════════════════════════════════════════════
+// ══ RENDER POSITIONS ══
 function renderPositions(){
-  const grid=document.getElementById('positionsGrid');
-  const empty=document.getElementById('posEmpty');
+  const area=document.getElementById('posArea');
   document.getElementById('openBadge').textContent=positions.length;
   if(positions.length===0){
-    if(!empty){
-      grid.innerHTML='<div class="positions-empty" id="posEmpty">No open positions. Start the system and enable AI to begin trading.</div>';
-    }
+    area.innerHTML='<div class="pos-empty" id="posEmpty">No open positions — start the system and enable AI</div>';
     return;
   }
-  if(empty)empty.remove();
-  // Re-render all position cards
-  const existing=new Set(positions.map(p=>p.id));
-  // Remove stale cards
-  grid.querySelectorAll('.pos-card').forEach(el=>{if(!existing.has(el.dataset.id))el.remove()});
-  positions.forEach(pos=>{
-    const price=marketData[pos.pair]?.price||pos.entry;
+  area.innerHTML='<div class="pos-grid">'+positions.map(pos=>{
+    const price=mkt[pos.pair]?.price||pos.entry;
     const pnl=calcPnl(pos,price);
-    const dp=getDp(pos.pair);
-    const pnlSign=pnl>=0?'+':'';
-    let card=grid.querySelector(`[data-id="${pos.id}"]`);
-    if(!card){
-      card=document.createElement('div');
-      card.className='pos-card fade-up';
-      card.dataset.id=pos.id;
-      grid.appendChild(card);
+    const dp=DP[pos.pair];const sign=pnl>=0?'+':'';
+    const fibLvls=fibs[pos.pair];
+    let fibHtml='';
+    if(fibLvls){
+      fibHtml='<div class="fib-row">';
+      const nearest=FIB_LEVELS.map(f=>({f,val:fibLvls.levels[f].ret,dist:Math.abs(fibLvls.levels[f].ret-price)})).sort((a,b)=>a.dist-b.dist);
+      FIB_LEVELS.forEach(f=>{
+        const val=fibLvls.levels[f].ret;
+        const isNearest=nearest[0].f===f;
+        fibHtml+=`<span class="fib-level ${isNearest?'nearest':''}">${(f*100).toFixed(1)}% ${val.toFixed(dp)}</span>`;
+      });
+      fibHtml+='</div>';
     }
-    card.innerHTML=`
-      <div class="pos-symbol">${pos.pair}</div>
-      <div class="pos-dir ${pos.dir.toLowerCase()}">${pos.dir}</div>
-      <div class="pos-entry">Entry: ${pos.entry.toFixed(dp)}</div>
-      <div class="pos-current">Now: ${price.toFixed(dp)}</div>
-      <div class="pos-pnl ${pnl>=0?'up':'dn'}">${pnlSign}₹${Math.abs(pnl).toFixed(2)}</div>
-      <div class="pos-meta">SL ${pos.sl.toFixed(dp)} · TP ${pos.tp.toFixed(dp)} · ${pos.lots} lots · ${pos.openTime}</div>
-      <button class="btn btn-ghost btn-sm pos-close" onclick="closePosition('${pos.id}','Manual Close')">Close</button>
-      ${pos.reason?`<div class="pos-reason">🧠 ${pos.reason}</div>`:''}
-    `;
+    return`<div class="pos-card fade-up">
+      <div class="pos-top">
+        <div class="pos-sym">${pos.pair}</div>
+        <div class="dir-badge ${pos.dir.toLowerCase()}">${pos.dir}</div>
+        <div class="pos-entry">Entry: ${pos.entry.toFixed(dp)}</div>
+        <div class="pos-now">Now: ${price.toFixed(dp)}</div>
+        <div class="pos-pnl ${pnl>=0?'up':'dn'}">${sign}$${Math.abs(pnl).toFixed(4)}</div>
+        <div class="pos-sltp">SL: ${pos.sl.toFixed(dp)} · TP: ${pos.tp.toFixed(dp)} · ${pos.lots} lots</div>
+        <button class="btn btn-ghost btn-sm pos-close" onclick="manualClose('${pos.id}')">Close</button>
+      </div>
+      <div class="pos-bottom">
+        <div class="pos-reason">🧠 ${pos.reason}</div>
+        <div class="pos-tags">
+          ${pos.fibLevel?`<span class="pos-tag tag-fib">Fib ${pos.fibLevel}</span>`:''}
+          ${pos.breakEvenDone?'<span class="pos-tag tag-be">Break-even</span>':''}
+          ${trailSL?'<span class="pos-tag tag-trail">Trailing</span>':''}
+        </div>
+      </div>
+      ${fibHtml}
+    </div>`;
+  }).join('')+'</div>';
+}
+function updatePnlInline(){
+  positions.forEach(pos=>{
+    const price=mkt[pos.pair]?.price||pos.entry;
+    const pnl=calcPnl(pos,price);
+    const dp=DP[pos.pair];const sign=pnl>=0?'+':'';
+    // Update just the P&L and current price without full re-render
+    const cards=document.querySelectorAll('.pos-card');
+    cards.forEach(card=>{
+      if(card.querySelector('.pos-sym')?.textContent===pos.pair){
+        const pnlEl=card.querySelector('.pos-pnl');
+        const nowEl=card.querySelector('.pos-now');
+        const slEl=card.querySelector('.pos-sltp');
+        if(pnlEl){pnlEl.textContent=`${sign}$${Math.abs(pnl).toFixed(4)}`;pnlEl.className='pos-pnl '+(pnl>=0?'up':'dn')}
+        if(nowEl)nowEl.textContent=`Now: ${price.toFixed(dp)}`;
+        if(slEl)slEl.textContent=`SL: ${pos.sl.toFixed(dp)} · TP: ${pos.tp.toFixed(dp)} · ${pos.lots} lots`;
+      }
+    });
   });
 }
 
-// ══════════════════════════════════════════════
-// RENDER HISTORY
-// ══════════════════════════════════════════════
+// ══ RENDER HISTORY ══
 function renderHistory(){
-  const body=document.getElementById('historyBody');
-  document.getElementById('historyBadge').textContent=closedTrades.length;
-  if(closedTrades.length===0){body.innerHTML='<div class="history-empty">No closed trades yet.</div>';return}
-  body.innerHTML=`<table class="history-table">
-    <thead><tr><th>PAIR</th><th>DIR</th><th>ENTRY</th><th>CLOSE</th><th>P&L</th><th>REASON</th><th>TIME</th></tr></thead>
-    <tbody>${closedTrades.slice(0,50).map(t=>{
-      const dp=getDp(t.pair);const sign=t.pnl>=0?'+':'';
+  const body=document.getElementById('histBody');
+  document.getElementById('histBadge').textContent=closed.length;
+  if(closed.length===0){body.innerHTML='<div class="hist-empty">No closed trades yet.</div>';return}
+  body.innerHTML=`<table class="hist-table">
+    <thead><tr><th>PAIR</th><th>DIR</th><th>ENTRY</th><th>CLOSE</th><th>P&L</th><th>REASON</th><th>FIB</th><th>TIME</th></tr></thead>
+    <tbody>${closed.slice(0,50).map(t=>{
+      const dp=DP[t.pair];const sign=t.pnl>=0?'+':'';
       return`<tr>
-        <td><strong>${t.pair}</strong></td>
+        <td><b>${t.pair}</b></td>
         <td><span class="badge badge-${t.dir.toLowerCase()}">${t.dir}</span></td>
         <td>${t.entry.toFixed(dp)}</td>
         <td>${(t.closePrice||t.entry).toFixed(dp)}</td>
-        <td class="${t.pnl>=0?'up':'dn'}">${sign}₹${Math.abs(t.pnl).toFixed(2)}</td>
-        <td><span class="badge ${t.closeReason==='TP Hit'?'badge-tp':t.closeReason==='SL Hit'?'badge-sl':'badge-manual'}">${t.closeReason}</span></td>
-        <td style="color:#aaa">${t.closeTime}</td>
+        <td class="${t.pnl>=0?'up':'dn'}">${sign}$${Math.abs(t.pnl).toFixed(4)}</td>
+        <td><span class="badge ${t.closeReason==='TP Hit'?'badge-tp':t.closeReason==='SL Hit'?'badge-sl':t.closeReason==='AI Exit'?'badge-aiexit':'badge-manual'}">${t.closeReason}</span></td>
+        <td style="color:#aaa">${t.fibLevel||'—'}</td>
+        <td style="color:#bbb">${t.closeTime}</td>
       </tr>`;
     }).join('')}</tbody>
   </table>`;
 }
 
-// ══════════════════════════════════════════════
-// STATS
-// ══════════════════════════════════════════════
+// ══ STATS ══
 function updateStats(){
-  const openPnl=positions.reduce((s,p)=>{const price=marketData[p.pair]?.price||p.entry;return s+calcPnl(p,price)},0);
-  const realisedPnl=closedTrades.reduce((s,t)=>s+t.pnl,0);
-  const totalPnl=openPnl+realisedPnl;
-  const wins=closedTrades.filter(t=>t.pnl>0).length;
-  const wr=closedTrades.length>0?((wins/closedTrades.length)*100).toFixed(0)+'% win rate':'—';
-  const sign=totalPnl>=0?'+':'';
-  const rSign=realisedPnl>=0?'+':'';
-  const el=document.getElementById('statPnl');
-  el.textContent=`${sign}₹${Math.abs(totalPnl).toFixed(2)}`;
-  el.className='stat-val '+(totalPnl>0?'up':totalPnl<0?'dn':'');
-  document.getElementById('statPnlPct').textContent=`open + closed`;
-  document.getElementById('statOpen').textContent=positions.length;
-  document.getElementById('statClosed').textContent=closedTrades.length;
-  document.getElementById('statWR').textContent=wr;
-  const rel=document.getElementById('statRealised');
-  rel.textContent=`${rSign}₹${Math.abs(realisedPnl).toFixed(2)}`;
-  rel.className='stat-val '+(realisedPnl>0?'up':realisedPnl<0?'dn':'');
+  const openPnl=positions.reduce((s,p)=>s+calcPnl(p,mkt[p.pair]?.price||p.entry),0);
+  const realised=closed.reduce((s,t)=>s+t.pnl,0);
+  const total=openPnl+realised;
+  const wins=closed.filter(t=>t.pnl>0).length;
+  const sign=total>=0?'+':'';const rs=realised>=0?'+':'';
+  const pnlEl=document.getElementById('sTotalPnl');
+  pnlEl.textContent=`${sign}$${Math.abs(total).toFixed(4)}`;
+  pnlEl.className='stat-val '+(total>0?'up':total<0?'dn':'');
+  document.getElementById('sOpen').textContent=positions.length;
+  document.getElementById('sClosed').textContent=closed.length;
+  document.getElementById('sWR').textContent=closed.length>0?`${((wins/closed.length)*100).toFixed(0)}% win`:'—';
+  const rEl=document.getElementById('sRealised');
+  rEl.textContent=`${rs}$${Math.abs(realised).toFixed(4)}`;
+  rEl.className='stat-val '+(realised>0?'up':realised<0?'dn':'');
 }
 
-// ══════════════════════════════════════════════
-// AI FEED
-// ══════════════════════════════════════════════
-let aiFeedOpen=true;
+// ══ AI FEED ══
 function toggleAiFeed(){
   aiFeedOpen=!aiFeedOpen;
   document.getElementById('aiFeedBody').style.display=aiFeedOpen?'':'none';
-  document.getElementById('aiFeedToggleIcon').textContent=aiFeedOpen?'▲ collapse':'▼ expand';
+  document.getElementById('aiFeedIcon').textContent=aiFeedOpen?'▲':'▼';
 }
-function addAiItem(icon,text,time){
-  aiItems.unshift({icon,text,time});
-  if(aiItems.length>80)aiItems.pop();
-  const body=document.getElementById('aiFeedBody');
-  body.innerHTML=aiItems.map(item=>`
-    <div class="ai-item fade-up">
-      <div class="ai-time">${item.time}</div>
-      <div class="ai-icon">${item.icon}</div>
-      <div class="ai-text">${item.text}</div>
-    </div>
-  `).join('');
+function addLog(icon,text,time){
+  aiLog.unshift({icon,text,time});if(aiLog.length>100)aiLog.pop();
+  document.getElementById('aiFeedBody').innerHTML=aiLog.map(l=>`
+    <div class="ai-item">
+      <div class="ai-time">${l.time}</div>
+      <div class="ai-icon">${l.icon}</div>
+      <div class="ai-text">${l.text}</div>
+    </div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-loadConfig();
-loadToUI();
-updateStats();
+// ══ INIT ══
+loadConfig();loadToUI();updateStats();
 </script>
 </body>
 </html>
