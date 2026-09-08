@@ -107,6 +107,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:14p
 .source-tag.massive{border-color:rgba(168,85,247,.3);color:var(--purple)}
 .source-tag.frank{border-color:rgba(59,130,246,.3);color:var(--blue)}
 .source-tag.alpaca{border-color:rgba(249,115,22,.3);color:var(--orange)}
+.source-tag.delta{border-color:rgba(200,255,0,.3);color:var(--accent)}
 .countdown-ring{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)}
 .countdown-num{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;min-width:16px;text-align:right}
 
@@ -259,8 +260,12 @@ footer{text-align:center;padding:18px 0;color:var(--dim);font-size:8px;letter-sp
   </div>
 
   <div class="s-section">
-    <div class="s-section-title">EXCHANGERATE-API KEY (forex price fallback)</div>
-    <div class="key-row"><div class="key-wrap"><input class="key-input" id="erKey" type="password" placeholder="ExchangeRate-API key..."/><button class="btn-rev" onclick="toggleReveal('erKey',this)">Show</button></div></div>
+    <div class="s-section-title">DELTA EXCHANGE API KEY (crypto · realtime WebSocket)</div>
+    <div class="key-row">
+      <div class="key-label">Read-only key <span class="req">realtime crypto price</span></div>
+      <div class="key-wrap"><input class="key-input" id="deltaKey" type="password" placeholder="Delta Exchange read key..."/><button class="btn-rev" onclick="toggleReveal('deltaKey',this)">Show</button></div>
+    </div>
+    <div style="margin-top:5px;font-size:8px;color:var(--muted)">wss://socket.delta.exchange · BTC, ETH, SOL perpetuals · true realtime ticks</div>
   </div>
 
   <div class="s-section">
@@ -385,7 +390,7 @@ footer{text-align:center;padding:18px 0;color:var(--dim);font-size:8px;letter-sp
 
 <script>
 // ═══ STORAGE ═══
-const LS={MASSIVE:'atb_massive',TD1:'atb_td1',TD2:'atb_td2',TD3:'atb_td3',TD4:'atb_td4',TD5:'atb_td5',ER:'atb_er',AI_KEY:'atb_ai_key',AI_PROVIDER:'atb_ai_provider',LOT:'atb_lot',SL:'atb_sl',AI_MODE:'atb_ai_mode'};
+const LS={MASSIVE:'atb_massive',TD1:'atb_td1',TD2:'atb_td2',TD3:'atb_td3',TD4:'atb_td4',TD5:'atb_td5',DELTA:'atb_delta',AI_KEY:'atb_ai_key',AI_PROVIDER:'atb_ai_provider',LOT:'atb_lot',SL:'atb_sl',AI_MODE:'atb_ai_mode'};
 const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return''}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const lsClear=()=>Object.values(LS).forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
@@ -393,7 +398,7 @@ const lsClear=()=>Object.values(LS).forEach(k=>{try{localStorage.removeItem(k)}c
 // ═══ DEFAULTS (pre-filled keys) ═══
 const DEFAULT_MASSIVE='lkeF3rPDKl6ZeDvdcjOOuSBn6chI4dYN';
 const DEFAULT_TD=['eb5e02ff78f14b5e9ef9acc9245d522f','a5cb51990f08433c8ed5cbafe11d798d','b7cd424d22f648d0bf06f7542879d2d1','58079bffb91347f08f3be1bcb901f856','f13c82ea98f947b48b9453b15a732cf1'];
-const DEFAULT_ER='ee52c6e8ed8d64a58d3c00b0';
+const DEFAULT_DELTA='VBR3ThPR3exRrXRZh1WNrHS3FvEsBu';
 const WA_NUMBER='917094956963';
 
 // ═══ MODES ═══
@@ -421,19 +426,20 @@ let currentMode='forex';
 
 // ═══ CONFIG ═══
 const STARTING_CAPITAL=100000;
-const PRICE_INTERVAL=5000;
+const PRICE_INTERVAL=5000; // forex REST poll only
 const CANDLE_INTERVAL=3600000;
 const BOT_COLORS={CPR:'#c8ff00',EMA:'#a855f7',RSI:'#3b82f6',MACD:'#f59e0b'};
 const BOT_STRATEGIES={CPR:'Central Pivot Range',EMA:'EMA 9/21 Crossover',RSI:'RSI Mean Reversion',MACD:'MACD Momentum'};
 
 // ═══ RUNTIME ═══
-let massiveKey='',tdKeys=[],activeTdKeyIdx=0,erKey='',aiKey='',aiProvider='anthropic';
+let massiveKey='',tdKeys=[],activeTdKeyIdx=0,deltaKey='',aiKey='',aiProvider='anthropic';
+let deltaWs=null,deltaWsReady=false,deltaTickCount=0;
 let LOT_SIZE=10000,SL_PIPS=10,TP_PIPS=30,aiModeEnabled=false,waAlertsEnabled=true;
 let marketData={};
 let bots={CPR:mkBot('CPR'),EMA:mkBot('EMA'),RSI:mkBot('RSI'),MACD:mkBot('MACD')};
 let feedItems=[],aiFeedItems=[],equityLabels=[];
 let equityChart=null,waToastTimer=null;
-let isRunning=false,candleInterval=null,priceInterval=null,countdownInterval=null;
+let isRunning=false,candleInterval=null,priceInterval=null,countdownInterval=null,wsTickCount=0;
 let isFetching=false,candlesLoaded=false,candleLastUpdated='';
 let priceSource='';
 
@@ -443,13 +449,14 @@ function mkBot(n){return{name:n,capital:STARTING_CAPITAL,positions:[],closedTrad
 function initDefaults(){
   if(!lsGet(LS.MASSIVE))lsSet(LS.MASSIVE,DEFAULT_MASSIVE);
   DEFAULT_TD.forEach((k,i)=>{const key=Object.values(LS)[i+1];if(!lsGet(key))lsSet(key,k)});
-  if(!lsGet(LS.ER))lsSet(LS.ER,DEFAULT_ER);
+  if(!lsGet(LS.DELTA))lsSet(LS.DELTA,DEFAULT_DELTA);
 }
 
 // ═══ MODE SWITCH ═══
 function switchMode(m){
   if(m===currentMode)return;
   if(isRunning)stopAll();
+  if(wsReconnectTimer){clearTimeout(wsReconnectTimer);wsReconnectTimer=null}
   currentMode=m;
   marketData={};
   bots={CPR:mkBot('CPR'),EMA:mkBot('EMA'),RSI:mkBot('RSI'),MACD:mkBot('MACD')};
@@ -470,23 +477,29 @@ function switchMode(m){
 // ═══ START/STOP ═══
 function toggleStartStop(){if(isRunning)stopAll();else startAll()}
 function startAll(){
-  isRunning=true;candlesLoaded=false;
+  isRunning=true;candlesLoaded=false;wsTickCount=0;
   updateRunUI();
   addFeed('SYS',`<span class="finfo">Started · ${MODES[currentMode].label} · ${MODES[currentMode].pairs.join(' · ')} · Mode:${aiModeEnabled&&aiKey?aiProvider+' AI':'Manual'} · SL:${SL_PIPS}p TP:${TP_PIPS}p</span>`,'#3b82f6');
   fetchCandlesAndRunBots();
   candleInterval=setInterval(fetchCandlesAndRunBots,CANDLE_INTERVAL);
-  priceTick();
-  priceInterval=setInterval(priceTick,PRICE_INTERVAL);
-  startCountdown();
+  if(currentMode==='crypto'){
+    connectDeltaWs();
+  }else{
+    priceTick();
+    priceInterval=setInterval(priceTick,PRICE_INTERVAL);
+    startCountdown();
+  }
 }
 function stopAll(){
   isRunning=false;
   clearInterval(candleInterval);clearInterval(priceInterval);clearInterval(countdownInterval);
   candleInterval=null;priceInterval=null;countdownInterval=null;
   candlesLoaded=false;
+  // Close Delta WebSocket
+  if(deltaWs){try{deltaWs.close()}catch(e){}deltaWs=null;deltaWsReady=false;}
   updateRunUI();
   document.getElementById('countdown').textContent='—';
-  addFeed('SYS','<span class="fwarn">STOPPED — all API calls halted</span>','#f59e0b');
+  addFeed('SYS','<span class="fwarn">STOPPED — all API calls + WebSocket closed</span>','#f59e0b');
 }
 function updateRunUI(){
   const btn=document.getElementById('startStopBtn');
@@ -506,7 +519,9 @@ function updateRunUI(){
   }
 }
 function startCountdown(){
+  // Only for forex REST mode
   let s=PRICE_INTERVAL/1000;
+  document.querySelector('.countdown-ring').firstChild.textContent='PRICE ';
   document.getElementById('countdown').textContent=s;
   countdownInterval=setInterval(()=>{
     if(!isRunning){document.getElementById('countdown').textContent='—';return}
@@ -528,7 +543,7 @@ function updateModeLabel(){const on=document.getElementById('aiModeToggle').chec
 function loadSettingsToUI(){
   document.getElementById('massiveKey').value=lsGet(LS.MASSIVE);
   ['tdKey1','tdKey2','tdKey3','tdKey4','tdKey5'].forEach((id,i)=>document.getElementById(id).value=lsGet(Object.values(LS)[i+1]));
-  document.getElementById('erKey').value=lsGet(LS.ER);
+  document.getElementById('deltaKey').value=lsGet(LS.DELTA);
   document.getElementById('aiKey').value=lsGet(LS.AI_KEY);
   document.getElementById('lotSize').value=lsGet(LS.LOT)||'10000';
   document.getElementById('slPips').value=lsGet(LS.SL)||'10';
@@ -541,7 +556,7 @@ function loadSettingsToUI(){
 function saveSettings(){
   lsSet(LS.MASSIVE,document.getElementById('massiveKey').value.trim());
   ['tdKey1','tdKey2','tdKey3','tdKey4','tdKey5'].forEach((id,i)=>lsSet(Object.values(LS)[i+1],document.getElementById(id).value.trim()));
-  lsSet(LS.ER,document.getElementById('erKey').value.trim());
+  lsSet(LS.DELTA,document.getElementById('deltaKey').value.trim());
   lsSet(LS.AI_KEY,document.getElementById('aiKey').value.trim());
   lsSet(LS.LOT,document.getElementById('lotSize').value);
   lsSet(LS.SL,document.getElementById('slPips').value);
@@ -557,7 +572,7 @@ function loadConfig(){
   massiveKey=lsGet(LS.MASSIVE);
   tdKeys=[LS.TD1,LS.TD2,LS.TD3,LS.TD4,LS.TD5].map(k=>lsGet(k)).filter(v=>v.length>0);
   activeTdKeyIdx=0;
-  erKey=lsGet(LS.ER);
+  deltaKey=lsGet(LS.DELTA)||DEFAULT_DELTA;
   aiKey=lsGet(LS.AI_KEY);
   aiProvider=lsGet(LS.AI_PROVIDER)||'anthropic';
   LOT_SIZE=parseInt(lsGet(LS.LOT)||'10000');
@@ -689,99 +704,108 @@ async function runBots(){
 }
 
 // ═══ FETCH PRICE — Massive → ExRate/Frankfurter (forex) / Alpaca (crypto) fallback ═══
-async function priceTick(){
+// ═══ DELTA EXCHANGE WEBSOCKET — true realtime crypto ═══
+const DELTA_WS_URL='wss://socket.delta.exchange';
+const DELTA_SYMBOLS={'BTC/USD':'BTCUSD','ETH/USD':'ETHUSD','SOL/USD':'SOLUSD'};
+let wsReconnectTimer=null;
+
+function connectDeltaWs(){
   if(!isRunning)return;
-  const m=MODES[currentMode];const pairs=m.pairs;
+  if(deltaWs&&(deltaWs.readyState===WebSocket.OPEN||deltaWs.readyState===WebSocket.CONNECTING))return;
+  addFeed('SYS','<span class="finfo">Connecting Delta Exchange WebSocket...</span>','#a855f7');
   try{
-    if(currentMode==='forex'){
-      await fetchForexPrice(pairs,m);
-    }else{
-      await fetchCryptoPrice(pairs,m);
-    }
-    Object.values(bots).forEach(b=>{checkSLTP(b);calcOpenPnl(b)});
-    renderTicker();renderAggregate();renderPortfolios();
-    document.getElementById('lastUpdated').textContent=`price ${ts()} [${priceSource}] · candles ${candleLastUpdated||'pending'}`;
-  }catch(e){}
-}
-async function fetchForexPrice(pairs,m){
-  // Try Massive first
-  if(massiveKey){
-    try{
-      const symbols=pairs.map(p=>m.massivePrefix[p]).join(',');
-      const r=await fetch(`https://api.massive.com/v2/snapshot/locale/global/markets/forex/tickers?tickers=${symbols}&apiKey=${massiveKey}`);
-      const d=await r.json();
-      if(d.tickers&&d.tickers.length>0){
-        d.tickers.forEach(t=>{
-          const sym=Object.keys(m.massivePrefix).find(k=>m.massivePrefix[k]===t.ticker);
-          if(!sym)return;
-          const price=t.day?.c||t.lastQuote?.ap||t.lastTrade?.p;
-          if(price){
-            const prev=marketData[sym]?.candles?parseFloat(marketData[sym].candles[1].close):price;
-            marketData[sym]={...marketData[sym]||{},price,change:price-prev,changePct:((price-prev)/prev)*100};
-          }
-        });
-        priceSource='Massive';return;
-      }
-    }catch(e){}
-  }
-  // Fallback: ExchangeRate-API
-  if(erKey){
-    try{
-      const r=await fetch(`https://v6.exchangerate-api.com/v6/${erKey}/latest/USD`);
-      const d=await r.json();
-      if(d.result==='success'){
-        pairs.forEach(sym=>{
-          let price=null;
-          if(sym==='USD/JPY')price=d.conversion_rates['JPY'];
-          if(sym==='EUR/USD')price=d.conversion_rates['EUR']?1/d.conversion_rates['EUR']:null;
-          if(price){const prev=marketData[sym]?.candles?parseFloat(marketData[sym].candles[1].close):price;marketData[sym]={...marketData[sym]||{},price,change:price-prev,changePct:((price-prev)/prev)*100}}
-        });
-        priceSource='ExRate';return;
-      }
-    }catch(e){}
-  }
-  // Final fallback: Frankfurter
-  try{
-    const[euR,jpR]=await Promise.all([fetch('https://api.frankfurter.dev/v2/rate/EUR/USD'),fetch('https://api.frankfurter.dev/v2/rate/USD/JPY')]);
-    const eu=await euR.json(),jp=await jpR.json();
-    if(eu.rate){const prev=marketData['EUR/USD']?.candles?parseFloat(marketData['EUR/USD'].candles[1].close):eu.rate;marketData['EUR/USD']={...marketData['EUR/USD']||{},price:eu.rate,change:eu.rate-prev,changePct:((eu.rate-prev)/prev)*100}}
-    if(jp.rate){const prev=marketData['USD/JPY']?.candles?parseFloat(marketData['USD/JPY'].candles[1].close):jp.rate;marketData['USD/JPY']={...marketData['USD/JPY']||{},price:jp.rate,change:jp.rate-prev,changePct:((jp.rate-prev)/prev)*100}}
-    priceSource='Frankfurter';
-  }catch(e){}
-}
-async function fetchCryptoPrice(pairs,m){
-  // Try Massive first
-  if(massiveKey){
-    try{
-      const symbols=pairs.map(p=>m.massivePrefix[p]).join(',');
-      const r=await fetch(`https://api.massive.com/v2/snapshot/locale/global/markets/crypto/tickers?tickers=${symbols}&apiKey=${massiveKey}`);
-      const d=await r.json();
-      if(d.tickers&&d.tickers.length>0){
-        d.tickers.forEach(t=>{
-          const sym=Object.keys(m.massivePrefix).find(k=>m.massivePrefix[k]===t.ticker);
-          if(!sym)return;
-          const price=t.day?.c||t.lastTrade?.p;
-          if(price){const prev=marketData[sym]?.candles?parseFloat(marketData[sym].candles[1].close):price;marketData[sym]={...marketData[sym]||{},price,change:price-prev,changePct:((price-prev)/prev)*100}}
-        });
-        priceSource='Massive';return;
-      }
-    }catch(e){}
-  }
-  // Fallback: Alpaca (no key needed for crypto)
-  try{
-    const syms=pairs.map(p=>m.alpacaSymbol[p]).join(',');
-    const r=await fetch(`https://data.alpaca.markets/v1beta3/crypto/us/latest/bars?symbols=${encodeURIComponent(syms)}`);
-    const d=await r.json();
-    if(d.bars){
-      Object.entries(d.bars).forEach(([sym,bar])=>{
-        const ourSym=sym.replace('/','/');
-        const price=bar.c;
-        const prev=marketData[ourSym]?.candles?parseFloat(marketData[ourSym].candles[1].close):price;
-        marketData[ourSym]={...marketData[ourSym]||{},price,change:price-prev,changePct:((price-prev)/prev)*100};
+    deltaWs=new WebSocket(DELTA_WS_URL);
+    deltaWs.onopen=()=>{
+      deltaWsReady=true;
+      priceSource='Delta WS';
+      addFeed('SYS','<span class="fup">Delta WebSocket connected — realtime ticks active</span>','#22c55e');
+      // Subscribe to v2/ticker for each symbol
+      const symbols=MODES['crypto'].pairs.map(p=>DELTA_SYMBOLS[p]);
+      symbols.forEach(sym=>{
+        deltaWs.send(JSON.stringify({type:'subscribe',payload:{channels:[{name:'v2/ticker',symbols:[sym]}]}}));
       });
-      priceSource='Alpaca';
+      // Show tick counter instead of countdown
+      document.getElementById('countdown').textContent='●';
+      document.querySelector('.countdown-ring').firstChild.textContent='TICKS ';
+    };
+    deltaWs.onmessage=(evt)=>{
+      if(!isRunning)return;
+      try{
+        const msg=JSON.parse(evt.data);
+        if(msg.type==='subscriptions'){addFeed('SYS',`<span class="fup">Subscribed: ${JSON.stringify(msg.subscriptions?.map(s=>s.symbols)||[])}</span>`,'#22c55e');return}
+        if(msg.type!=='v2/ticker')return;
+        const ticker=msg;
+        const sym=ticker.symbol;
+        // Map Delta symbol to our pair
+        const ourPair=Object.keys(DELTA_SYMBOLS).find(k=>DELTA_SYMBOLS[k]===sym);
+        if(!ourPair)return;
+        const price=parseFloat(ticker.mark_price||ticker.close||ticker.last_price);
+        if(!price||isNaN(price))return;
+        const prev=marketData[ourPair]?.candles?parseFloat(marketData[ourPair].candles[1]?.close||price):marketData[ourPair]?.price||price;
+        const open24=parseFloat(ticker.open||prev);
+        const change=price-open24,changePct=open24>0?((change/open24)*100):0;
+        marketData[ourPair]={...marketData[ourPair]||{},price,change,changePct};
+        // Check SL/TP + update P&L on every tick
+        wsTickCount++;
+        document.getElementById('countdown').textContent=wsTickCount;
+        Object.values(bots).forEach(b=>{checkSLTP(b);calcOpenPnl(b)});
+        renderTicker();renderAggregate();renderPortfolios();
+        document.getElementById('lastUpdated').textContent=`tick #${wsTickCount} ${ts()} [Delta WS] · candles ${candleLastUpdated||'pending'}`;
+      }catch(e){}
+    };
+    deltaWs.onerror=()=>{
+      addFeed('SYS','<span class="fwarn">Delta WS error — retrying in 5s...</span>','#f59e0b');
+    };
+    deltaWs.onclose=()=>{
+      deltaWsReady=false;deltaWs=null;
+      if(isRunning&&currentMode==='crypto'){
+        addFeed('SYS','<span class="fwarn">Delta WS closed — reconnecting in 5s...</span>','#f59e0b');
+        if(wsReconnectTimer)clearTimeout(wsReconnectTimer);
+        wsReconnectTimer=setTimeout(connectDeltaWs,5000);
+      }
+    };
+  }catch(e){
+    addFeed('SYS',`<span class="fwarn">Delta WS failed: ${e.message}</span>`,'#f59e0b');
+  }
+}
+
+// ═══ FOREX PRICE — REST poll every 5s ═══
+async function priceTick(){
+  if(!isRunning||currentMode!=='forex')return;
+  const m=MODES['forex'];const pairs=m.pairs;
+  try{
+    // Try Massive first
+    if(massiveKey){
+      try{
+        const symbols=pairs.map(p=>m.massivePrefix[p]).join(',');
+        const r=await fetch(`https://api.massive.com/v2/snapshot/locale/global/markets/forex/tickers?tickers=${symbols}&apiKey=${massiveKey}`);
+        const d=await r.json();
+        if(d.tickers&&d.tickers.length>0){
+          d.tickers.forEach(t=>{
+            const sym=Object.keys(m.massivePrefix).find(k=>m.massivePrefix[k]===t.ticker);if(!sym)return;
+            const price=t.day?.c||t.lastQuote?.ap||t.lastTrade?.p;
+            if(price){const prev=marketData[sym]?.candles?parseFloat(marketData[sym].candles[1].close):price;marketData[sym]={...marketData[sym]||{},price,change:price-prev,changePct:((price-prev)/prev)*100}}
+          });
+          priceSource='Massive';
+          finishPriceTick();return;
+        }
+      }catch(e){}
     }
+    // Fallback: Frankfurter (unlimited)
+    try{
+      const[euR,jpR]=await Promise.all([fetch('https://api.frankfurter.dev/v2/rate/EUR/USD'),fetch('https://api.frankfurter.dev/v2/rate/USD/JPY')]);
+      const eu=await euR.json(),jp=await jpR.json();
+      if(eu.rate){const prev=marketData['EUR/USD']?.candles?parseFloat(marketData['EUR/USD'].candles[1].close):eu.rate;marketData['EUR/USD']={...marketData['EUR/USD']||{},price:eu.rate,change:eu.rate-prev,changePct:((eu.rate-prev)/prev)*100}}
+      if(jp.rate){const prev=marketData['USD/JPY']?.candles?parseFloat(marketData['USD/JPY'].candles[1].close):jp.rate;marketData['USD/JPY']={...marketData['USD/JPY']||{},price:jp.rate,change:jp.rate-prev,changePct:((jp.rate-prev)/prev)*100}}
+      priceSource='Frankfurter';
+    }catch(e){}
+    finishPriceTick();
   }catch(e){}
+}
+function finishPriceTick(){
+  Object.values(bots).forEach(b=>{checkSLTP(b);calcOpenPnl(b)});
+  renderTicker();renderAggregate();renderPortfolios();
+  document.getElementById('lastUpdated').textContent=`price ${ts()} [${priceSource}] · candles ${candleLastUpdated||'pending'}`;
 }
 
 // ═══ FETCH CANDLES — Massive → TwelveData (forex) / Alpaca (crypto) fallback ═══
@@ -931,7 +955,7 @@ function renderTicker(){
   });
   const stag=document.getElementById('priceSourceTag');
   stag.textContent=priceSource||'—';
-  stag.className='source-tag '+(priceSource==='Massive'?'massive':priceSource==='Alpaca'?'alpaca':'frank');
+  stag.className='source-tag '+(priceSource==='Massive'?'massive':priceSource==='Alpaca'?'alpaca':priceSource==='Delta WS'?'delta':'frank');
 }
 function renderLeaderboard(){
   const sorted=Object.values(bots).map(b=>{const t=b.capital+b.openPnl,pnl=t-STARTING_CAPITAL;return{...b,pnl,pct:(pnl/STARTING_CAPITAL)*100}}).sort((a,b)=>b.pnl-a.pnl);
