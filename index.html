@@ -462,7 +462,7 @@ function switchMode(m){
   renderTickerShell();renderPortfolios();renderLeaderboard();
   if(equityChart){equityChart.data.labels=[];equityChart.data.datasets.forEach(d=>d.data=[]);equityChart.update('none')}
   // Reset lot size for mode
-  if(m==='crypto'&&LOT_SIZE>=1000){LOT_SIZE=0.01;document.getElementById('lotSize').value='0.01'}
+  if(m==='crypto'&&LOT_SIZE>=1){LOT_SIZE=0.001;document.getElementById('lotSize').value='0.001'}
   else if(m==='forex'&&LOT_SIZE<1){LOT_SIZE=10000;document.getElementById('lotSize').value='10000'}
   addFeed('SYS',`<span class="finfo">Switched to ${MODES[m].label} mode — ${MODES[m].pairs.join(' · ')} · Lot reset to ${LOT_SIZE}</span>`,'#3b82f6');
 }
@@ -596,11 +596,20 @@ async function getAiDecision(botName,sym,price,bars){
   const cpr=calcCPR(bars);const closes=bars?bars.map(b=>parseFloat(b.close)).reverse():[];
   const rsi=calcRSI(closes);const rv=rsi[rsi.length-1];
   const e9=calcEMA(closes,9),e21=calcEMA(closes,21);const n=closes.length-1;
-  const ctx=`Scalper AI for ${sym} (${currentMode}). Price:${price.toFixed(dp)} RSI:${rv.toFixed(1)} EMA9:${e9[n]?.toFixed(dp)||'N/A'} EMA21:${e21[n]?.toFixed(dp)||'N/A'}${cpr?` Pivot:${cpr.pivot.toFixed(dp)} R1:${cpr.r1.toFixed(dp)} S1:${cpr.s1.toFixed(dp)}`:''}. You are ${botName} bot. SL max ${SL_PIPS} pips, TP=SL*3. Reply ONLY valid JSON: {"signal":"LONG"|"SHORT"|"WAIT","entry":${price.toFixed(dp)},"sl":number,"tp":number,"reason":"one sentence"}`;
+  const ctx=`Scalper for ${sym} (${currentMode}). Price:${price.toFixed(dp)} RSI:${rv.toFixed(1)} EMA9:${e9[n]?.toFixed(dp)||'N/A'} EMA21:${e21[n]?.toFixed(dp)||'N/A'}${cpr?` Pivot:${cpr.pivot.toFixed(dp)} R1:${cpr.r1.toFixed(dp)} S1:${cpr.s1.toFixed(dp)}`:''}. Strategy: ${botName}. Reply ONLY valid JSON (no other text): {"signal":"LONG","reason":"brief"} or {"signal":"SHORT","reason":"brief"} or {"signal":"WAIT","reason":"brief"}`;
   try{
-    if(aiProvider==='anthropic'){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':aiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:120,messages:[{role:'user',content:ctx}]})});const d=await r.json();return JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim())}
-    else if(aiProvider==='openai'){const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${aiKey}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:120,messages:[{role:'user',content:ctx}],response_format:{type:'json_object'}})});const d=await r.json();return JSON.parse(d.choices?.[0]?.message?.content||'{}')}
-    else if(aiProvider==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:ctx}]}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:120}})});const d=await r.json();return JSON.parse((d.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json|```/g,'').trim())}
+    // Helper: enforce SL/TP from settings regardless of AI output
+  function enforceRR(dec,sym,price){
+    if(!dec||!dec.signal||dec.signal==='WAIT')return dec;
+    const m=MODES[currentMode];const pip=m.pip[sym];
+    const entry=price; // always use current price as entry
+    const sl=dec.signal==='LONG'?entry-SL_PIPS*pip:entry+SL_PIPS*pip;
+    const tp=dec.signal==='LONG'?entry+TP_PIPS*pip:entry-TP_PIPS*pip;
+    return{...dec,entry,sl,tp};
+  }
+  if(aiProvider==='anthropic'){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':aiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:80,messages:[{role:'user',content:ctx}]})});const d=await r.json();return enforceRR(JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim()),sym,price)}
+  else if(aiProvider==='openai'){const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${aiKey}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:80,messages:[{role:'user',content:ctx}],response_format:{type:'json_object'}})});const d=await r.json();return enforceRR(JSON.parse(d.choices?.[0]?.message?.content||'{}'),sym,price)}
+  else if(aiProvider==='gemini'){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:ctx}]}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:80}})});const d=await r.json();return enforceRR(JSON.parse((d.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json|```/g,'').trim()),sym,price)}
   }catch(e){addAiFeed(botName,`API error: ${e.message}`,'❌');return null}
 }
 
@@ -628,7 +637,7 @@ function checkSLTP(bot){
       bot.capital+=pnl;bot.totalPnl+=pnl;if(pnl>0)bot.wins++;else bot.losses++;
       bot.closedTrades.unshift({...pos,closePrice:cp,pnl,closeReason:cr,closeTime:ts(),status:'closed'});
       bot.positions.splice(i,1);
-      const dp=MODES[currentMode].dp[pos.symbol];const sign=pnl>=0?'+':'';
+      const dp=MODES[currentMode].dp[pos.symbol];const sign=pnl>=0?'+':'-';
       addFeed(bot.name,`${bot.name} <span class="fpair">${pos.symbol}</span> ${cr==='TP'?'<span class="fup">TP +3R</span>':'<span class="fdn">SL -1R</span>'} ${pos.dir} @ ${cp.toFixed(dp)} → <span class="${pnl>=0?'fup':'fdn'}">${sign}₹${Math.abs(pnl).toFixed(0)}</span>${pos.aiDecision?'<span class="fai"> AI</span>':''}`,BOT_COLORS[bot.name]);
       waAlertTrade(bot.name,pos.symbol,pos.dir,cr,pos.entry,cp,pnl);
     }
@@ -639,7 +648,8 @@ function openPos(bot,sym,dir,entry,sl,tp,aiDecision,reason){
   const dp=MODES[currentMode].dp[sym];const m=MODES[currentMode];
   const slp=(Math.abs(entry-sl)/m.pip[sym]).toFixed(1),tpp=(Math.abs(tp-entry)/m.pip[sym]).toFixed(1);
   bot.positions.push({symbol:sym,dir,entry,sl,tp,lots:LOT_SIZE,openTime:ts(),status:'open',id:Date.now()+''+Math.random().toFixed(2),aiDecision:!!aiDecision,reason});
-  addFeed(bot.name,`${bot.name} <span class="fpair">${sym}</span> <span class="${dir==='LONG'?'fup':'fdn'}">▲ ${dir}</span> @ ${entry.toFixed(dp)} SL:${slp}p TP:${tpp}p${aiDecision?'<span class="fai"> AI</span>':''}`,BOT_COLORS[bot.name]);
+  const slLabel=currentMode==='crypto'?`SL:${sl.toFixed(dp)}`:`SL:${slp}p`;const tpLabel=currentMode==='crypto'?`TP:${tp.toFixed(dp)}`:`TP:${tpp}p`;
+  addFeed(bot.name,`${bot.name} <span class="fpair">${sym}</span> <span class="${dir==='LONG'?'fup':'fdn'}">▲ ${dir}</span> @ ${entry.toFixed(dp)} ${slLabel} ${tpLabel}${aiDecision?'<span class="fai"> AI</span>':''}`,BOT_COLORS[bot.name]);
   if(aiDecision&&reason)addAiFeed(bot.name,`${sym} ${dir}: ${reason}`,'🧠');
 }
 function calcOpenPnl(bot){bot.openPnl=bot.positions.reduce((s,pos)=>{const p=marketData[pos.symbol]?.price;return p?s+pipPnl(pos.symbol,pos.dir,pos.entry,p,pos.lots):s},0)}
@@ -667,7 +677,7 @@ async function runBots(){
           bot.capital+=pnl;bot.totalPnl+=pnl;if(pnl>0)bot.wins++;else bot.losses++;
           bot.closedTrades.unshift({...existing,closePrice:p,pnl,closeReason:'FLIP',closeTime:ts(),status:'closed'});
           bot.positions=bot.positions.filter(x=>x.id!==existing.id);
-          const sign=pnl>=0?'+':'';
+          const sign=pnl>=0?'+':'-';
           addFeed(bot.name,`${bot.name} <span class="fpair">${sym}</span> <span class="fwarn">FLIP</span> ${existing.dir}→${dec.signal} <span class="${pnl>=0?'fup':'fdn'}">${sign}₹${Math.abs(pnl).toFixed(0)}</span>`,BOT_COLORS[bot.name]);
           waAlertTrade(bot.name,sym,existing.dir,'FLIP',existing.entry,p,pnl);
           openPos(bot,sym,dec.signal,dec.entry,dec.sl,dec.tp,aiModeEnabled&&aiKey,dec.reason);
@@ -948,7 +958,7 @@ function renderPortfolios(){
     const closedRows=bot.closedTrades.slice(0,5).map(t=>{const dp=m.dp[t.symbol]||2;const ts2=t.pnl>=0?'+':'';return`<tr><td><span class="badge-closed">${t.closeReason}</span>${t.aiDecision?'<span class="badge-ai">AI</span>':''}</td><td>${t.symbol}</td><td><span class="sig-badge ${t.dir==='LONG'?'sig-L':'sig-S'}">${t.dir==='LONG'?'▲L':'▼S'}</span></td><td>${t.entry.toFixed(dp)}</td><td>${(t.closePrice||t.entry).toFixed(dp)}</td><td class="${t.pnl>=0?'up':'dn'}">${ts2}₹${Math.abs(t.pnl).toFixed(0)}</td><td style="font-size:7px;color:var(--muted)">${t.closeTime||'—'}</td></tr>`}).join('');
     const allRows=openRows+closedRows;
     const tableHtml=allRows?`<table class="trades-table"><thead><tr><th>ST</th><th>PAIR</th><th>DIR</th><th>ENTRY</th><th>NOW</th><th>P&L</th><th>SL/TP</th></tr></thead><tbody>${allRows}</tbody></table>`:`<div class="no-trades">No trades yet</div>`;
-    return`<div class="pf-card"><div class="pf-header" onclick="toggleTrades('${bot.name}')"><div class="bot-avatar" style="background:${col}">${bot.name}</div><div class="pf-info"><div class="pf-botname">${bot.name} ${modeTag}</div><div class="pf-strategy">${BOT_STRATEGIES[bot.name]}</div></div><div class="pf-pnl"><div class="pf-pnl-val" style="color:${pnl>=0?'var(--up)':'var(--dn)'}">${sign}₹${Math.abs(pnl).toFixed(0)}</div><div class="pf-pnl-pct">${sign}${pct.toFixed(2)}%</div></div><div class="pf-expand" id="exp-${bot.name}">▼</div></div><div class="pf-meta"><div class="pf-meta-item"><div class="pf-meta-label">CAPITAL</div><div class="pf-meta-val">₹${Math.round(tot/1000)}K</div></div><div class="pf-meta-item"><div class="pf-meta-label">OPEN P&L</div><div class="pf-meta-val ${bot.openPnl>=0?'up':'dn'}">${bot.openPnl>=0?'+':''}₹${Math.abs(bot.openPnl).toFixed(0)}</div></div><div class="pf-meta-item"><div class="pf-meta-label">W/L</div><div class="pf-meta-val">${bot.wins}/${bot.losses}</div></div><div class="pf-meta-item"><div class="pf-meta-label">LOT</div><div class="pf-meta-val">${currentMode==='crypto'?LOT_SIZE:LOT_SIZE>=1000?(LOT_SIZE/1000).toFixed(0)+'K':LOT_SIZE}</div></div></div><div class="trades-body" id="trades-${bot.name}">${tableHtml}</div></div>`;
+    return`<div class="pf-card"><div class="pf-header" onclick="toggleTrades('${bot.name}')"><div class="bot-avatar" style="background:${col}">${bot.name}</div><div class="pf-info"><div class="pf-botname">${bot.name} ${modeTag}</div><div class="pf-strategy">${BOT_STRATEGIES[bot.name]}</div></div><div class="pf-pnl"><div class="pf-pnl-val" style="color:${pnl>=0?'var(--up)':'var(--dn)'}">${sign}₹${Math.abs(pnl).toFixed(0)}</div><div class="pf-pnl-pct">${sign}${pct.toFixed(2)}%</div></div><div class="pf-expand" id="exp-${bot.name}">▼</div></div><div class="pf-meta"><div class="pf-meta-item"><div class="pf-meta-label">CAPITAL</div><div class="pf-meta-val">₹${Math.round(tot/1000)}K</div></div><div class="pf-meta-item"><div class="pf-meta-label">OPEN P&L</div><div class="pf-meta-val ${bot.openPnl>=0?'up':'dn'}">${bot.openPnl>=0?'+':''}₹${Math.abs(bot.openPnl).toFixed(0)}</div></div><div class="pf-meta-item"><div class="pf-meta-label">W/L</div><div class="pf-meta-val">${bot.wins}/${bot.losses}</div></div><div class="pf-meta-item"><div class="pf-meta-label">LOT</div><div class="pf-meta-val">${currentMode==='crypto'?LOT_SIZE.toFixed(3):LOT_SIZE>=1000?(LOT_SIZE/1000).toFixed(0)+'K':LOT_SIZE}</div></div></div><div class="trades-body" id="trades-${bot.name}">${tableHtml}</div></div>`;
   }).join('');
 }
 function toggleTrades(n){document.getElementById('trades-'+n).classList.toggle('open');const e=document.getElementById('exp-'+n);e.textContent=e.textContent==='▼'?'▲':'▼'}
@@ -965,7 +975,7 @@ const buildWaUrl=text=>'https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(te
 function showWaToast(title,body,url){document.getElementById('waToastBody').textContent=body;document.getElementById('waToastBtn').onclick=()=>{window.open(url,'_blank');closeWaToast()};if(waToastTimer)clearTimeout(waToastTimer);document.getElementById('waToast').classList.add('show');waToastTimer=setTimeout(closeWaToast,16000)}
 function closeWaToast(){document.getElementById('waToast').classList.remove('show')}
 function buildLeaderboardText(){const sorted=Object.values(bots).map(b=>({name:b.name,pnl:(b.capital+b.openPnl)-STARTING_CAPITAL,pct:((b.capital+b.openPnl-STARTING_CAPITAL)/STARTING_CAPITAL*100),wins:b.wins,losses:b.losses})).sort((a,b)=>b.pnl-a.pnl);const medals=['🥇','🥈','🥉','4️⃣'];const rows=sorted.map((b,i)=>`${medals[i]} ${b.name}: ${b.pnl>=0?'+':''}₹${Math.abs(b.pnl).toFixed(0)} (${b.pct.toFixed(2)}%) ${b.wins}W/${b.losses}L`).join('\n');const totalPnl=sorted.reduce((s,b)=>s+b.pnl,0);return`🤖 AI TRADE BATTLE — storiesbyachu\n📅 ${new Date().toLocaleString('en-IN')} | ${MODES[currentMode].label} | R:R 1:3 | ${aiModeEnabled&&aiKey?aiProvider.toUpperCase()+' AI':'Manual'}\n\n${rows}\n\nCOMBINED: ${totalPnl>=0?'+':''}₹${Math.abs(totalPnl).toFixed(0)}\n#trading #${currentMode} #storiesbyachu`}
-function waAlertTrade(botName,sym,dir,cr,entry,cp,pnl){if(!waAlertsEnabled)return;const dp=MODES[currentMode].dp[sym]||2;const emoji=cr==='TP'?'✅':cr==='SL'?'❌':'🔄';const sign=pnl>=0?'+':'';const text=`${emoji} ${cr} — ${botName}\n${sym} | ${dir}\n${entry.toFixed(dp)} → ${cp.toFixed(dp)}\nP&L: ${sign}₹${Math.abs(pnl).toFixed(0)} | 1:3 R:R\n${new Date().toLocaleTimeString('en-IN')}\n#storiesbyachu`;showWaToast(`${emoji} ${cr}`,`${botName} · ${sym} · ${dir}\n${sign}₹${Math.abs(pnl).toFixed(0)}`,buildWaUrl(text))}
+function waAlertTrade(botName,sym,dir,cr,entry,cp,pnl){if(!waAlertsEnabled)return;const dp=MODES[currentMode].dp[sym]||2;const emoji=cr==='TP'?'✅':cr==='SL'?'❌':'🔄';const sign=pnl>=0?'+':'-';const text=`${emoji} ${cr} — ${botName}\n${sym} | ${dir}\n${entry.toFixed(dp)} → ${cp.toFixed(dp)}\nP&L: ${sign}₹${Math.abs(pnl).toFixed(0)} | 1:3 R:R\n${new Date().toLocaleTimeString('en-IN')}\n#storiesbyachu`;showWaToast(`${emoji} ${cr}`,`${botName} · ${sym} · ${dir}\n${sign}₹${Math.abs(pnl).toFixed(0)}`,buildWaUrl(text))}
 function sendWaSummary(){if(!Object.values(bots).some(b=>b.closedTrades.length>0)){alert('No trades yet');return}showWaToast('📊 P&L Summary','Tap to send to WhatsApp',buildWaUrl(buildLeaderboardText()))}
 
 // ═══ MANUAL REFRESH ═══
