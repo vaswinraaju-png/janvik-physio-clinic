@@ -145,6 +145,11 @@ select:focus,input:focus{border-color:var(--accent)}
     </div>
     <div class="divider"></div>
     <div class="ctrl-group">
+      <span class="ctrl-label">Date</span>
+      <input type="date" id="datePicker" style="font-size:13px;padding:7px 10px"/>
+    </div>
+    <div class="divider"></div>
+    <div class="ctrl-group">
       <span class="ctrl-label">TF Chosen</span>
       <div class="tf-display" id="tfDisplay">Waiting...</div>
     </div>
@@ -305,10 +310,19 @@ function saveKey() {
   toast('API key saved ✓');
 }
 
+// ── Set default date to yesterday ────────────────────────
+(function() {
+  const dp = document.getElementById('datePicker');
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  dp.value = y.toISOString().slice(0,10);
+  dp.max = y.toISOString().slice(0,10); // can't pick future
+})();
+
 // ── Delta API ─────────────────────────────────────────────
 async function fetchCandles(symbol, resolution) {
-  const now = Math.floor(Date.now() / 1000);
-  const dayStart = now - (now % 86400) - 86400;
+  const dp = document.getElementById('datePicker');
+  const picked = dp.value; // YYYY-MM-DD
+  const dayStart = Math.floor(new Date(picked + 'T00:00:00Z').getTime() / 1000);
   const dayEnd = dayStart + 86400;
   const url = `https://api.delta.exchange/v2/history/candles?symbol=${symbol}&resolution=${resolution}&start=${dayStart}&end=${dayEnd}`;
   try {
@@ -556,7 +570,7 @@ async function runSim() {
     // 1. Fetch candles (15m for initial AI analysis)
     const candles = await fetchCandles(symbol, initTf);
     allCandles = candles;
-    document.getElementById('chartTitle').textContent = `${symbol} — Yesterday`;
+    document.getElementById('chartTitle').textContent = `${symbol} — ${document.getElementById('datePicker').value}`;
 
     btn.lastChild.textContent = ' AI analyzing...';
 
