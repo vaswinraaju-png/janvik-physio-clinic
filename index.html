@@ -527,36 +527,27 @@ function generateMockCandles(symbol) {
 
 // ── Claude Analysis ──────────────────────────────────────────────
 async function callClaude(candles, symbol) {
-  const sample = candles.slice(0, 48).map(c => ({
-    t: new Date(c.time * 1000).toISOString().slice(11,16),
-    o: +c.open.toFixed(2), h: +c.high.toFixed(2),
-    l: +c.low.toFixed(2), cl: +c.close.toFixed(2),
-    v: c.volume
-  }));
+  // Use only 24 candles to keep prompt short
+  const sample = candles.slice(0, 24).map(c => [
+    new Date(c.time * 1000).toISOString().slice(11,16),
+    +c.open.toFixed(1),
+    +c.high.toFixed(1),
+    +c.low.toFixed(1),
+    +c.close.toFixed(1),
+    c.volume || 0
+  ]);
 
-  const prompt = `You are an expert quant trader. Analyze this ${symbol} 15-minute OHLCV data from yesterday and:
-1. Pick the BEST strategy from: EMA Crossover, RSI Divergence, Bollinger Band Breakout, CPR (Central Pivot Range), VWAP Reversion, Momentum Breakout
-2. Apply it to generate trade signals
-3. Run a simple backtest: $10,000 capital, 1x leverage, 0.05% fee per trade
+  const prompt = `Quant trader task: analyze ${symbol} OHLCV data [time,o,h,l,c,vol] and backtest.
 
-Respond ONLY with valid JSON (no markdown):
-{
-  "strategy": "Strategy Name",
-  "description": "2 sentence description of why this strategy fits",
-  "reasoning": "3-4 sentence market analysis of yesterday's price action",
-  "signals": [
-    {"time": "HH:MM", "action": "BUY|SELL|HOLD", "price": 0, "reason": "short reason"}
-  ],
-  "backtest": {
-    "total_return_pct": 0.0,
-    "win_rate_pct": 0.0,
-    "total_trades": 0,
-    "max_drawdown_pct": 0.0,
-    "pnl_curve": [0, ...]
-  }
-}
+Pick one strategy: EMA Crossover, RSI, Bollinger Breakout, CPR, VWAP, Momentum.
+Backtest: $10000, 0.05% fee/trade.
 
-Data: ${JSON.stringify(sample)}`;
+Reply ONLY raw JSON, no markdown, no explanation outside JSON:
+{"strategy":"name","description":"why this fits in 1-2 sentences","reasoning":"market analysis 2-3 sentences","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"pnl_curve":[0,100,200]}}
+
+Limit signals to max 8. pnl_curve max 20 points.
+
+Data:${JSON.stringify(sample)}`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -568,15 +559,27 @@ Data: ${JSON.stringify(sample)}`;
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
+      max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
   });
 
-  if (!res.ok) throw new Error(`Claude API ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`Claude API ${res.status}: ${errBody.slice(0,120)}`);
+  }
+
   const data = await res.json();
-  const text = data.content[0].text.replace(/```json|```/g, '').trim();
-  return JSON.parse(text);
+  let text = data.content[0].text.trim();
+
+  // Strip any markdown fences
+  text = text.replace(/^```[a-z]*\n?/i, '').replace(/```$/,'').trim();
+
+  // Extract JSON object if wrapped in extra text
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('No JSON in Claude response');
+
+  return JSON.parse(match[0]);
 }
 
 // ── Main Analysis Loop ──────────────────────────────────────────────
