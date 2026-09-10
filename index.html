@@ -43,6 +43,7 @@ select:focus,input:focus{border-color:var(--accent)}
 .save-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);font-family:var(--sans);font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:4px;padding:3px 9px;cursor:pointer}
 .run-btn{font-family:var(--sans);font-size:13px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 20px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap;margin-left:auto}
 .run-btn:disabled{opacity:.5;cursor:not-allowed}
+.tf-display{font-family:var(--mono);font-size:13px;background:var(--accent-bg);color:var(--accent);border:1px solid #C7D9FF;border-radius:var(--r-sm);padding:7px 12px;min-width:80px;text-align:center;font-weight:500}
 .run-btn .spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
 .run-btn.loading .spinner{display:block}
 
@@ -144,13 +145,8 @@ select:focus,input:focus{border-color:var(--accent)}
     </div>
     <div class="divider"></div>
     <div class="ctrl-group">
-      <span class="ctrl-label">Timeframe</span>
-      <select id="tfSel">
-        <option value="1">1m</option>
-        <option value="5">5m</option>
-        <option value="15" selected>15m</option>
-        <option value="60">1h</option>
-      </select>
+      <span class="ctrl-label">TF Chosen</span>
+      <div class="tf-display" id="tfDisplay">Waiting...</div>
     </div>
     <div class="divider"></div>
     <div class="ctrl-group">
@@ -173,6 +169,31 @@ select:focus,input:focus{border-color:var(--accent)}
     <div class="mc"><div class="mc-label">Total Trades</div><div class="mc-val" id="mTrades">--</div><div class="mc-sub">Signals</div></div>
     <div class="mc"><div class="mc-label">Max Drawdown</div><div class="mc-val" id="mDD">--</div><div class="mc-sub">Peak→trough</div></div>
     <div class="mc"><div class="mc-label">Final Equity</div><div class="mc-val" id="mEq">--</div><div class="mc-sub">From $10,000</div></div>
+  </div>
+
+  <!-- AI DECISION TRANSPARENCY -->
+  <div id="aiDecisionCard" style="display:none;margin-bottom:14px">
+    <div class="panel" style="border-left:3px solid var(--accent)">
+      <div class="ph">
+        <span class="ph-title">🧠 AI Decision</span>
+        <span class="ph-meta" id="aiDecisionMeta"></span>
+      </div>
+      <div style="padding:12px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Strategy Chosen</div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent)" id="aiStratName">--</div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Timeframe</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:500" id="aiTFChosen">--</div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Market Regime</div>
+          <div style="font-size:13px;font-weight:500" id="aiRegime">--</div>
+        </div>
+      </div>
+      <div style="padding:0 14px 12px;font-size:12px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:10px" id="aiWhyText">--</div>
+    </div>
   </div>
 
   <!-- GRID -->
@@ -317,6 +338,133 @@ function mockCandles(symbol, res, dayStart) {
   return candles;
 }
 
+// ── Strategy definitions ──────────────────────────────────
+const STRATEGIES = {
+  auto: {
+    name: 'AI Auto-Pick',
+    prompt: (sym, tf) => `Pick the single best strategy for this ${sym} ${tf}m data from: EMA Scalp, RSI Divergence, Bollinger Squeeze, VWAP Scalp, CPR Pivot, Opening Range Breakout, EMA Pullback, Momentum Breakout, RSI+EMA Combo, S/R Reversal. Choose based on market regime (trending vs ranging, volatility).`
+  },
+  ema_scalp: {
+    name: 'EMA Scalp',
+    prompt: (sym, tf) => `Apply EMA Scalp strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate EMA9 and EMA21 across all candles
+- BUY when EMA9 crosses above EMA21 AND candle closes above both EMAs AND volume is above average
+- SELL when EMA9 crosses back below EMA21 OR price hits 2:1 RR from entry
+- Stop loss: below last swing low (use as exit signal)
+- Avoid signals during sideways chop (EMA9 and EMA21 tangled within 0.1%)`
+  },
+  rsi_div: {
+    name: 'RSI Divergence',
+    prompt: (sym, tf) => `Apply RSI Divergence strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate RSI(14) across all candles
+- BUY signal: price makes lower low but RSI makes higher low (bullish divergence) + next candle is green
+- SELL signal: price makes higher high but RSI makes lower high (bearish divergence) + next candle is red
+- Exit long: RSI crosses 50 from below. Exit short: RSI crosses 50 from above
+- Stop loss: below divergence low (long) / above divergence high (short)
+- Only trade divergences in ranging markets, skip if ADX-equivalent shows strong trend`
+  },
+  bb_squeeze: {
+    name: 'Bollinger Band Squeeze',
+    prompt: (sym, tf) => `Apply Bollinger Band Squeeze strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate BB(20, 2) across all candles
+- Identify squeeze: periods where band width is less than 50% of its 20-period average
+- BUY: first candle that closes ABOVE upper band after a squeeze + volume 2x average
+- SELL: first candle that closes BELOW lower band after a squeeze + volume 2x average
+- Exit: when price touches the opposite band
+- Stop loss: close back inside the bands
+- Only trade breakouts AFTER a squeeze, not when bands are already wide`
+  },
+  vwap_scalp: {
+    name: 'VWAP Scalp',
+    prompt: (sym, tf) => `Apply VWAP Scalp strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate VWAP and +1/-1 standard deviation bands for the session
+- BUY: price dips to VWAP or -1SD band AND prints a bullish candle (close > open, lower wick)
+- SELL signal to exit long: price reaches +1SD band or VWAP from above
+- Short SELL: price tags +1SD, prints bearish candle (close < open, upper wick)
+- Exit short: price reaches -1SD or VWAP from below
+- Stop loss: 0.15% beyond entry
+- Avoid last 15 min of session`
+  },
+  cpr: {
+    name: 'CPR Pivot',
+    prompt: (sym, tf) => `Apply CPR (Central Pivot Range) strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate from first candle: Pivot = (H+L+C)/3, TC = (Pivot+H)/2, BC = (Pivot+L)/2
+- R1 = 2*Pivot - L, S1 = 2*Pivot - H
+- BUY: price opens above CPR (TC), pulls back to TC level and holds (bullish candle at TC)
+- SELL short: price opens below CPR (BC), rallies to BC and fails (bearish candle at BC)
+- Exit long at R1, exit short at S1
+- Stop loss: below BC for longs, above TC for shorts
+- Narrow CPR (TC-BC < 0.1% of price): expect strong trend, trade breakout direction
+- Wide CPR: expect chop, trade reversals only`
+  },
+  orb: {
+    name: 'Opening Range Breakout',
+    prompt: (sym, tf) => `Apply Opening Range Breakout strategy to ${sym} ${tf}m data.
+Rules:
+- Opening range = high and low of the FIRST ${tf}m candle of the session
+- BUY: price breaks and CLOSES above ORB high + volume 1.5x average on breakout candle
+- SELL short: price breaks and CLOSES below ORB low + volume 1.5x average
+- Target: 1x ORB range projected from breakout (TP1), 2x for TP2 — use TP1 as exit
+- Stop loss: back inside ORB on a close
+- Only trade the first breakout, not retests
+- Skip if opening candle range is more than 1% of price (too wide)`
+  },
+  ema_pullback: {
+    name: 'EMA Trend Pullback',
+    prompt: (sym, tf) => `Apply EMA Trend Pullback strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate EMA20, EMA50, EMA200
+- Bullish bias only when price is above EMA200
+- BUY: in uptrend (above EMA200), price pulls back to EMA20, prints bullish candle (hammer, engulfing)
+- Exit long: at previous swing high or when price closes below EMA50
+- Bearish bias only when price is below EMA200
+- SELL short: price rallies to EMA20 in downtrend, prints bearish candle
+- Exit short: at previous swing low or close above EMA50
+- Stop loss: below EMA50 for longs, above EMA50 for shorts`
+  },
+  momentum_bo: {
+    name: 'Momentum Breakout',
+    prompt: (sym, tf) => `Apply Momentum Breakout strategy to ${sym} ${tf}m data.
+Rules:
+- Identify consolidation zones: 3-5 consecutive candles with less than 0.2% range
+- Calculate ADX equivalent: strong trend if last 10 candles are directionally consistent
+- BUY: price closes above consolidation high + volume spike (2x) + upward momentum (3 green candles before)
+- SELL short: price closes below consolidation low + volume spike + downward momentum
+- Exit: when momentum fades (3 consecutive small-bodied candles) or 3R target
+- Stop loss: middle of the consolidation range
+- Only trade if consolidation follows a directional move, not random chop`
+  },
+  rsi_ema: {
+    name: 'RSI + EMA Combo',
+    prompt: (sym, tf) => `Apply RSI + EMA Combo strategy to ${sym} ${tf}m data.
+Rules:
+- Calculate RSI(14) and EMA21 across all candles
+- BUY: RSI crosses ABOVE 50 AND price is above EMA21 AND candle closes green
+- SELL to exit: RSI crosses BELOW 50 OR price closes below EMA21
+- Short SELL: RSI crosses BELOW 50 AND price is below EMA21 AND candle closes red
+- Exit short: RSI crosses above 50 OR price closes above EMA21
+- Stop loss: below most recent swing low (long) / above swing high (short)
+- Best in trending markets — skip if RSI oscillates rapidly around 50`
+  },
+  sr_reversal: {
+    name: 'S/R Reversal',
+    prompt: (sym, tf) => `Apply Support/Resistance Reversal strategy to ${sym} ${tf}m data.
+Rules:
+- Identify key S/R levels: price points tested 2+ times in the session data
+- BUY: price taps a support level (within 0.15%) + RSI(14) < 45 + bullish reversal candle (hammer, bullish engulfing)
+- SELL short: price taps resistance + RSI > 55 + bearish candle (shooting star, bearish engulfing)
+- Exit long: at the next resistance level above entry
+- Exit short: at the next support level below entry
+- Stop loss: 0.3% beyond the S/R level
+- Only use levels tested at least twice in the data provided`
+  }
+};
+
 // ── Claude call ───────────────────────────────────────────
 async function callClaude(candles, symbol, tf) {
   // Compact sample — max 48 candles to save tokens
@@ -328,16 +476,30 @@ async function callClaude(candles, symbol, tf) {
     c.volume||0
   ]);
 
-  const prompt = `Quant backtest task: ${symbol} ${tf}m candles yesterday. Format: [time,open,high,low,close,vol]
+  const prompt = `You are a quant trader. Analyze this ${symbol} ${tf}m OHLCV data from yesterday and make TWO decisions:
 
-Pick one strategy that fits this price action: EMA Crossover, RSI Mean Reversion, Bollinger Breakout, CPR Pivot, VWAP Reversion, Momentum Breakout.
+1. PICK the best strategy from this list based on the actual price action:
+   - EMA Scalp (best TF: 5m) — for trending markets with clear EMA crossovers
+   - RSI Divergence (best TF: 5m) — for ranging markets with momentum shifts
+   - BB Squeeze (best TF: 5m) — for low-volatility breakouts
+   - VWAP Scalp (best TF: 1m) — for mean-reversion around VWAP intraday
+   - CPR Pivot (best TF: 15m) — for pivot-level respecting price action
+   - Opening Range Breakout (best TF: 15m) — for strong directional opens
+   - EMA Pullback (best TF: 15m) — for trending days with clean pullbacks
+   - Momentum Breakout (best TF: 15m) — for consolidation + expansion days
+   - RSI+EMA Combo (best TF: 30m) — for smooth trending price action
+   - SR Reversal (best TF: 15m) — for clearly defined support/resistance levels
 
-Generate up to 12 trade signals (BUY/SELL only, no HOLD). Each signal needs a time matching the data.
+2. DECIDE the optimal timeframe: 1m, 5m, 15m, or 60m — based on volatility and signal frequency in the data.
 
-Backtest rules: $10000 capital, full position per trade, 0.05% fee. Alternate BUY→SELL→BUY. Compute equity curve as array of equity values after each closed trade (start with 10000).
+3. EXPLAIN your decisions with: market_regime (Trending/Ranging/Choppy/Breakout), why_strategy, why_tf (each 1 sentence).
 
-Reply ONLY raw JSON, zero markdown:
-{"strategy":"name","description":"1 sentence why","reasoning":"2 sentence market analysis","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"winners":0,"losers":0,"equity_curve":[10000]}}
+4. APPLY the chosen strategy: generate up to 10 BUY/SELL signals. Signal times must exactly match times in the data.
+
+5. BACKTEST: $10000, 0.05% fee/side, full position per trade.
+
+Reply ONLY raw JSON:
+{"strategy":"name","chosen_tf":"15m","market_regime":"Trending","why_strategy":"1 sentence","why_tf":"1 sentence","description":"1 sentence","reasoning":"2 sentences","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"winners":0,"losers":0,"equity_curve":[10000]}}
 
 Data:${JSON.stringify(sample)}`;
 
@@ -378,7 +540,6 @@ Data:${JSON.stringify(sample)}`;
 async function runSim() {
   if (!claudeKey) { toast('Add Claude API key first'); return; }
   const symbol = document.getElementById('symbolSel').value;
-  const tf = document.getElementById('tfSel').value;
   const btn = document.getElementById('runBtn');
 
   btn.disabled = true;
@@ -386,17 +547,35 @@ async function runSim() {
   btn.querySelector('.spinner').style.display = 'block';
   btn.lastChild.textContent = ' Fetching data...';
 
+  // Step 1: fetch 15m as default for AI to analyse
+  const initTf = '15';
+  document.getElementById('tfDisplay').textContent = 'AI deciding...';
+  document.getElementById('aiDecisionCard').style.display = 'none';
+
   try {
-    // 1. Fetch candles
-    const candles = await fetchCandles(symbol, tf);
+    // 1. Fetch candles (15m for initial AI analysis)
+    const candles = await fetchCandles(symbol, initTf);
     allCandles = candles;
-    document.getElementById('chartMeta').textContent = `${candles.length} candles · ${tf}m`;
     document.getElementById('chartTitle').textContent = `${symbol} — Yesterday`;
 
     btn.lastChild.textContent = ' AI analyzing...';
 
-    // 2. Claude analysis
-    const result = await callClaude(candles, symbol, tf);
+    // 2. Claude analysis — AI picks strategy + TF
+    const result = await callClaude(candles, symbol, initTf);
+
+    // 3. If AI chose a different TF, re-fetch
+    const chosenTf = result.chosen_tf ? result.chosen_tf.replace('m','') : initTf;
+    let finalCandles = candles;
+    if (chosenTf !== initTf) {
+      btn.lastChild.textContent = ` Re-fetching ${chosenTf}m...`;
+      finalCandles = await fetchCandles(symbol, chosenTf);
+      allCandles = finalCandles;
+    }
+    document.getElementById('chartMeta').textContent = `${finalCandles.length} candles · ${chosenTf}m`;
+    document.getElementById('tfDisplay').textContent = chosenTf + 'm';
+
+    // Show transparency card
+    showAIDecision(result, chosenTf);
 
     // Cost tracking
     sessionCost += 0.01;
@@ -511,11 +690,38 @@ function renderMetrics(aiResult, sim) {
   eqEl.className = 'mc-val ' + (eq >= 10000 ? 'pos' : 'neg');
 }
 
+// ── Show AI Decision Transparency ─────────────────────────
+function showAIDecision(result, tf) {
+  const card = document.getElementById('aiDecisionCard');
+  card.style.display = '';
+  document.getElementById('aiStratName').textContent = result.strategy || '--';
+  document.getElementById('aiTFChosen').textContent = (result.chosen_tf || tf + 'm');
+  document.getElementById('aiRegime').textContent = result.market_regime || '--';
+  document.getElementById('aiDecisionMeta').textContent = new Date().toLocaleTimeString();
+  const why = [
+    result.why_strategy ? `Strategy: ${result.why_strategy}` : '',
+    result.why_tf ? `Timeframe: ${result.why_tf}` : ''
+  ].filter(Boolean).join(' · ');
+  document.getElementById('aiWhyText').textContent = why || result.reasoning || '--';
+
+  // Update chart header badge
+  document.getElementById('chartTitle').textContent = `${document.getElementById('symbolSel').value} — ${result.strategy} · ${result.chosen_tf || tf+'m'}`;
+}
+
 // ── Render Strategy ───────────────────────────────────────
 function renderStrategy(result) {
+  const regimeColor = {
+    'Trending':'var(--green)','Ranging':'var(--accent)',
+    'Choppy':'var(--amber)','Breakout':'#7C3AED'
+  }[result.market_regime] || 'var(--accent)';
+
   document.getElementById('stratContainer').innerHTML = `
     <div class="strat-card">
       <div class="strat-name">⚡ ${result.strategy}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <span style="font-family:var(--mono);font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px">${result.chosen_tf || '--'}</span>
+        <span style="font-size:11px;font-weight:600;color:${regimeColor}">${result.market_regime || ''}</span>
+      </div>
       <div class="strat-desc">${result.description}</div>
     </div>`;
   document.getElementById('reasoningEl').textContent = result.reasoning;
