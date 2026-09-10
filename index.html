@@ -4,409 +4,255 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AI Trading Battleground</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F6F8;--surface:#FFF;--surface2:#F0F2F6;
+  --border:#E3E6EC;--text:#111827;--muted:#6B7480;
+  --accent:#2A5FE8;--accent-bg:#EEF3FF;
+  --green:#15803D;--green-bg:#F0FDF4;--green-border:#BBF7D0;
+  --red:#B91C1C;--red-bg:#FEF2F2;--red-border:#FECACA;
+  --amber:#92400E;--amber-bg:#FFFBEB;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+  --r:8px;--r-sm:5px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
 
-  :root {
-    --bg: #F7F8FA;
-    --surface: #FFFFFF;
-    --surface2: #F0F2F5;
-    --border: #E2E5EA;
-    --text: #14181F;
-    --muted: #6B7280;
-    --accent: #2563EB;
-    --accent-light: #EFF4FF;
-    --green: #16A34A;
-    --green-bg: #F0FDF4;
-    --red: #DC2626;
-    --red-bg: #FEF2F2;
-    --yellow: #D97706;
-    --yellow-bg: #FFFBEB;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
+/* ── HEADER ── */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:100}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.logo{font-size:14px;font-weight:600;letter-spacing:-.3px}
+.logo b{color:var(--accent)}
+.chip{font-family:var(--mono);font-size:10px;background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:20px}
+.cost-chip{font-family:var(--mono);font-size:11px;background:var(--surface2);color:var(--muted);padding:3px 10px;border-radius:20px;border:1px solid var(--border)}
+.cost-chip span{color:var(--text);font-weight:500}
 
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
-  }
+/* ── MAIN ── */
+.main{max-width:1080px;margin:0 auto;padding:20px 16px}
 
-  /* HEADER */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-  .logo span { color: var(--accent); }
-  .badge {
-    font-family: var(--mono);
-    font-size: 10px;
-    font-weight: 500;
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
-  .header-right { display: flex; align-items: center; gap: 12px; }
+/* ── CONTROLS ── */
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.ctrl-group{display:flex;align-items:center;gap:6px}
+.ctrl-label{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+select,input{font-family:var(--sans);font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;color:var(--text);outline:none;transition:border-color .15s}
+select:focus,input:focus{border-color:var(--accent)}
+.divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
+.key-wrap{position:relative;min-width:200px}
+.key-wrap input{width:100%;padding-right:58px}
+.save-btn{position:absolute;right:5px;top:50%;transform:translateY(-50%);font-family:var(--sans);font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:4px;padding:3px 9px;cursor:pointer}
+.run-btn{font-family:var(--sans);font-size:13px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 20px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap;margin-left:auto}
+.run-btn:disabled{opacity:.5;cursor:not-allowed}
+.run-btn .spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.run-btn.loading .spinner{display:block}
 
-  /* TOGGLE */
-  .toggle-wrap { display: flex; align-items: center; gap: 8px; }
-  .toggle-label { font-size: 13px; color: var(--muted); font-weight: 500; }
-  .toggle {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    cursor: pointer;
-  }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--border);
-    border-radius: 12px;
-    transition: background 0.2s;
-  }
-  .toggle input:checked + .toggle-track { background: var(--accent); }
-  .toggle-thumb {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,.15);
-  }
-  .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-  .status-dot.live { background: var(--green); box-shadow: 0 0 0 3px #bbf7d0; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px #bbf7d0; } 50% { box-shadow: 0 0 0 6px #dcfce7; } }
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.mc-label{font-size:10px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.mc-val{font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:-.5px}
+.mc-val.pos{color:var(--green)}
+.mc-val.neg{color:var(--red)}
+.mc-sub{font-size:10px;color:var(--muted);margin-top:2px}
 
-  /* LAYOUT */
-  .main { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
 
-  /* CONTROLS BAR */
-  .controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    align-items: center;
-  }
-  select, input[type="text"], input[type="password"] {
-    font-family: var(--sans);
-    font-size: 13px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  select:focus, input:focus { border-color: var(--accent); }
-  .api-key-wrap { position: relative; flex: 1; min-width: 220px; max-width: 340px; }
-  .api-key-wrap input { width: 100%; padding-right: 72px; }
-  .save-btn {
-    position: absolute;
-    right: 6px; top: 50%;
-    transform: translateY(-50%);
-    font-family: var(--sans);
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 10px;
-    cursor: pointer;
-  }
-  .freq-select { min-width: 120px; }
-  .symbol-select { min-width: 130px; }
+/* ── PANEL ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.ph{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-size:12px;font-weight:600}
+.ph-meta{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.pb{padding:14px}
 
-  /* METRICS ROW */
-  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-  @media (max-width: 640px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
-  .metric-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
-  .metric-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .metric-val { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: -0.5px; }
-  .metric-val.pos { color: var(--green); }
-  .metric-val.neg { color: var(--red); }
-  .metric-val.neutral { color: var(--text); }
-  .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+/* ── CHART ── */
+.chart-wrap{width:100%;height:220px;position:relative}
 
-  /* MAIN GRID */
-  .grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
-  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+/* ── PLAYBACK ── */
+.playback{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--bg)}
+.play-btn{width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.play-btn svg{fill:#fff;width:12px;height:12px}
+.pb-slider{flex:1;accent-color:var(--accent);cursor:pointer}
+.pb-time{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.speed-sel{font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text)}
 
-  /* CHART PANEL */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .panel-title { font-size: 13px; font-weight: 600; }
-  .panel-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .panel-body { padding: 16px; }
+/* ── SIGNALS TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid var(--border);font-family:var(--mono)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.active-row td{background:var(--accent-bg)}
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:var(--sans)}
+.pill.buy{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.pill.sell{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.pill.hold{background:var(--amber-bg);color:var(--amber)}
+.tbl-wrap{max-height:260px;overflow-y:auto}
 
-  /* CHART */
-  .chart-wrap { width: 100%; height: 240px; position: relative; }
-  canvas { width: 100% !important; height: 100% !important; }
+/* ── STRATEGY CARD ── */
+.strat-card{background:var(--accent-bg);border:1px solid #C7D9FF;border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.strat-name{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.strat-desc{font-size:12px;color:#3B5BAD;line-height:1.6}
 
-  /* SIGNALS TABLE */
-  .signals-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .signals-table th {
-    font-size: 10px; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    padding: 8px 10px; text-align: left;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-  }
-  .signals-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
-  .signals-table tr:last-child td { border-bottom: none; }
-  .pill {
-    display: inline-block;
-    font-size: 10px; font-weight: 600;
-    padding: 2px 8px; border-radius: 20px;
-    font-family: var(--sans);
-  }
-  .pill.buy { background: var(--green-bg); color: var(--green); }
-  .pill.sell { background: var(--red-bg); color: var(--red); }
-  .pill.hold { background: var(--yellow-bg); color: var(--yellow); }
+/* ── REASONING ── */
+.reasoning{font-size:12px;color:var(--muted);line-height:1.7;padding:12px 14px;max-height:140px;overflow-y:auto}
 
-  /* AI PANEL */
-  .ai-panel { display: flex; flex-direction: column; gap: 12px; }
+/* ── PNL CHART ── */
+.pnl-wrap{height:110px;position:relative;padding:10px 14px}
 
-  .strategy-card {
-    background: var(--accent-light);
-    border: 1px solid #BFDBFE;
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
-  .strategy-name { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
-  .strategy-desc { font-size: 12px; color: #3B5BAD; line-height: 1.6; }
+/* ── EMPTY / LOADING ── */
+.empty{text-align:center;padding:32px 16px;color:var(--muted)}
+.empty-icon{font-size:28px;margin-bottom:8px}
+.empty-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.empty-sub{font-size:12px}
+.loader{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:var(--muted);font-size:13px}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  .reasoning-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-  .reasoning-body {
-    padding: 14px 16px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-height: 200px;
-    overflow-y: auto;
-  }
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;padding:9px 14px;border-radius:var(--r-sm);font-size:13px;z-index:999;opacity:0;pointer-events:none;transition:opacity .2s;max-width:280px}
+.toast.show{opacity:1}
 
-  /* LOADER */
-  .loader-wrap { display: flex; align-items: center; justify-content: center; height: 80px; gap: 8px; color: var(--muted); font-size: 13px; }
-  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* EMPTY */
-  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; }
-  .empty-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-  .empty-sub { font-size: 12px; }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 20px; right: 20px;
-    background: var(--text); color: white;
-    padding: 10px 16px; border-radius: var(--radius-sm);
-    font-size: 13px; z-index: 999;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .toast.show { opacity: 1; pointer-events: auto; }
-
-  /* LAST UPDATE */
-  .last-update { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-
-  .countdown {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    background: var(--accent-light);
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-
-  /* SIGNAL DOT on chart */
-  .no-data { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px; }
+/* ── TRADE MARKER ── */
+.equity-up{color:var(--green)}
+.equity-dn{color:var(--red)}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo">AI Trading <span>Battleground</span></div>
-    <div class="badge">DELTA EXCHANGE</div>
-    <div class="status-dot" id="statusDot"></div>
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">AI Trading <b>Battleground</b></div>
+    <div class="chip">DELTA EXCHANGE</div>
   </div>
-  <div class="header-right">
-    <span class="countdown" id="countdown" style="display:none"></span>
-    <div class="toggle-wrap">
-      <span class="toggle-label" id="toggleLabel">OFF</span>
-      <label class="toggle">
-        <input type="checkbox" id="masterToggle"/>
-        <div class="toggle-track"></div>
-        <div class="toggle-thumb"></div>
-      </label>
-    </div>
-  </div>
+  <div class="cost-chip">Session cost: $<span id="costVal">0.00</span></div>
 </div>
 
 <div class="main">
 
   <!-- CONTROLS -->
   <div class="controls">
-    <select class="symbol-select" id="symbolSelect">
-      <option value="BTCUSD">BTC/USD Perp</option>
-      <option value="ETHUSD">ETH/USD Perp</option>
-      <option value="SOLUSD">SOL/USD Perp</option>
-      <option value="BNBUSD">BNB/USD Perp</option>
-    </select>
-    <select class="freq-select" id="freqSelect">
-      <option value="30">Every 30s</option>
-      <option value="60" selected>Every 1 min</option>
-      <option value="300">Every 5 min</option>
-      <option value="900">Every 15 min</option>
-    </select>
-    <div class="api-key-wrap">
-      <input type="password" id="claudeKey" placeholder="Claude API Key (sk-ant-...)" />
-      <button class="save-btn" onclick="saveKey()">Save</button>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Symbol</span>
+      <select id="symbolSel">
+        <option value="BTCUSD">BTC/USD</option>
+        <option value="ETHUSD">ETH/USD</option>
+        <option value="SOLUSD">SOL/USD</option>
+        <option value="BNBUSD">BNB/USD</option>
+      </select>
     </div>
-    <span class="last-update" id="lastUpdate">No analysis yet</span>
+    <div class="divider"></div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Timeframe</span>
+      <select id="tfSel">
+        <option value="1">1m</option>
+        <option value="5">5m</option>
+        <option value="15" selected>15m</option>
+        <option value="60">1h</option>
+      </select>
+    </div>
+    <div class="divider"></div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Claude Key</span>
+      <div class="key-wrap">
+        <input type="password" id="claudeKey" placeholder="sk-ant-..."/>
+        <button class="save-btn" onclick="saveKey()">Save</button>
+      </div>
+    </div>
+    <button class="run-btn" id="runBtn" onclick="runSim()">
+      <div class="spinner"></div>
+      ⚔️ Run Simulation
+    </button>
   </div>
 
   <!-- METRICS -->
   <div class="metrics">
-    <div class="metric-card">
-      <div class="metric-label">Total Return</div>
-      <div class="metric-val" id="metReturn">--</div>
-      <div class="metric-sub" id="metReturnSub">Yesterday's backtest</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Win Rate</div>
-      <div class="metric-val neutral" id="metWin">--</div>
-      <div class="metric-sub" id="metWinSub">Trades closed</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Total Trades</div>
-      <div class="metric-val neutral" id="metTrades">--</div>
-      <div class="metric-sub">Signals generated</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Max Drawdown</div>
-      <div class="metric-val neutral" id="metDD">--</div>
-      <div class="metric-sub">Peak to trough</div>
-    </div>
+    <div class="mc"><div class="mc-label">Total Return</div><div class="mc-val" id="mRet">--</div><div class="mc-sub">Yesterday</div></div>
+    <div class="mc"><div class="mc-label">Win Rate</div><div class="mc-val" id="mWin">--</div><div class="mc-sub" id="mWinSub">--</div></div>
+    <div class="mc"><div class="mc-label">Total Trades</div><div class="mc-val" id="mTrades">--</div><div class="mc-sub">Signals</div></div>
+    <div class="mc"><div class="mc-label">Max Drawdown</div><div class="mc-val" id="mDD">--</div><div class="mc-sub">Peak→trough</div></div>
+    <div class="mc"><div class="mc-label">Final Equity</div><div class="mc-val" id="mEq">--</div><div class="mc-sub">From $10,000</div></div>
   </div>
 
-  <!-- MAIN GRID -->
+  <!-- GRID -->
   <div class="grid">
-    <!-- LEFT: Chart + Signals -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <!-- LEFT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- PRICE CHART -->
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title" id="chartTitle">Price Chart</span>
-          <span class="panel-meta" id="chartMeta">--</span>
+        <div class="ph">
+          <span class="ph-title" id="chartTitle">Price Chart — Yesterday</span>
+          <span class="ph-meta" id="chartMeta">Select TF and run</span>
         </div>
-        <div class="panel-body">
-          <div class="chart-wrap">
-            <canvas id="priceChart"></canvas>
-          </div>
+        <div class="pb">
+          <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+        </div>
+        <div class="playback" id="playbackBar" style="display:none">
+          <button class="play-btn" id="playBtn" onclick="togglePlay()">
+            <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+          </button>
+          <input type="range" class="pb-slider" id="simSlider" min="0" value="0" oninput="onSlider(this.value)"/>
+          <span class="pb-time" id="pbTime">00:00</span>
+          <select class="speed-sel" id="speedSel">
+            <option value="50">2x</option>
+            <option value="30" selected>5x</option>
+            <option value="15">10x</option>
+            <option value="5">20x</option>
+          </select>
         </div>
       </div>
 
+      <!-- SIGNALS TABLE -->
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Trade Signals</span>
-          <span class="panel-meta" id="sigCount">0 signals</span>
+        <div class="ph">
+          <span class="ph-title">Trade Log</span>
+          <span class="ph-meta" id="sigMeta">0 signals</span>
         </div>
-        <div id="signalsContainer">
+        <div id="sigContainer">
           <div class="empty">
             <div class="empty-icon">⚔️</div>
-            <div class="empty-title">Awaiting AI analysis</div>
-            <div class="empty-sub">Toggle ON and add your Claude API key to start</div>
+            <div class="empty-title">No simulation run yet</div>
+            <div class="empty-sub">Pick symbol, TF, add Claude key and hit Run</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: AI Panel -->
-    <div class="ai-panel">
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- STRATEGY -->
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">AI Strategy</span>
-          <span class="panel-meta">Claude picks</span>
-        </div>
-        <div class="panel-body" id="strategyContainer">
-          <div class="empty" style="padding:20px 0;">
+        <div class="ph"><span class="ph-title">AI Strategy</span><span class="ph-meta">Claude picks</span></div>
+        <div class="pb" id="stratContainer">
+          <div class="empty" style="padding:16px 0">
             <div class="empty-icon">🤖</div>
-            <div class="empty-title">No strategy yet</div>
-            <div class="empty-sub">AI will auto-select</div>
+            <div class="empty-title">Awaiting run</div>
           </div>
         </div>
       </div>
 
-      <div class="panel reasoning-box">
-        <div class="panel-header">
-          <span class="panel-title">AI Reasoning</span>
-        </div>
-        <div class="reasoning-body" id="reasoningBody">
-          Waiting for analysis...
-        </div>
-      </div>
-
+      <!-- REASONING -->
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">P&amp;L Curve</span>
+        <div class="ph"><span class="ph-title">AI Reasoning</span></div>
+        <div class="reasoning" id="reasoningEl">Waiting for analysis...</div>
+      </div>
+
+      <!-- P&L CURVE -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Equity Curve</span>
+          <span class="ph-meta" id="eqMeta">--</span>
         </div>
-        <div class="panel-body">
-          <div style="height:120px; position:relative;">
-            <canvas id="pnlChart"></canvas>
-          </div>
-        </div>
+        <div class="pnl-wrap"><canvas id="pnlChart"></canvas></div>
+      </div>
+
+      <!-- OPEN TRADE -->
+      <div class="panel" id="openTradePanel" style="display:none">
+        <div class="ph"><span class="ph-title">Open Position</span></div>
+        <div class="pb" id="openTradeBody"></div>
       </div>
     </div>
   </div>
@@ -415,249 +261,293 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config ──────────────────────────────────────────────
-const DELTA_BASE = 'https://api.delta.exchange';
-const PROXY = 'https://corsproxy.io/?';
+// ── State ─────────────────────────────────────────────────
 let claudeKey = localStorage.getItem('claude_key') || '';
-let isRunning = false;
-let intervalId = null;
-let countdownId = null;
-let countdownSec = 0;
-let priceChartInst = null;
-let pnlChartInst = null;
-let lastCandles = [];
-
-// ── DOM Refs ──────────────────────────────────────────────
-const toggle = document.getElementById('masterToggle');
-const toggleLabel = document.getElementById('toggleLabel');
-const statusDot = document.getElementById('statusDot');
-const freqSelect = document.getElementById('freqSelect');
-const symbolSelect = document.getElementById('symbolSelect');
-const claudeKeyInput = document.getElementById('claudeKey');
-const countdownEl = document.getElementById('countdown');
-const lastUpdateEl = document.getElementById('lastUpdate');
+let sessionCost = 0;
+let allCandles = [];
+let allSignals = [];
+let simEquity = [];
+let simStep = 0;
+let simTimer = null;
+let isPlaying = false;
+let priceChart = null;
+let pnlChart = null;
+let openTrade = null;
 
 // Restore key
-if (claudeKey) {
-  claudeKeyInput.value = claudeKey;
-}
+const keyEl = document.getElementById('claudeKey');
+if (claudeKey) keyEl.value = claudeKey;
 
-// ── Save Key ──────────────────────────────────────────────
 function saveKey() {
-  claudeKey = claudeKeyInput.value.trim();
+  claudeKey = keyEl.value.trim();
   localStorage.setItem('claude_key', claudeKey);
-  showToast('API key saved');
+  toast('API key saved ✓');
 }
 
-// ── Toggle ──────────────────────────────────────────────
-toggle.addEventListener('change', () => {
-  isRunning = toggle.checked;
-  toggleLabel.textContent = isRunning ? 'ON' : 'OFF';
-  statusDot.classList.toggle('live', isRunning);
-  if (isRunning) startLoop();
-  else stopLoop();
-});
-
-function startLoop() {
-  if (!claudeKey) { showToast('Add Claude API key first'); toggle.checked = false; isRunning = false; toggleLabel.textContent = 'OFF'; statusDot.classList.remove('live'); return; }
-  runAnalysis();
-  const freq = parseInt(freqSelect.value);
-  intervalId = setInterval(runAnalysis, freq * 1000);
-  startCountdown(freq);
-  countdownEl.style.display = 'inline';
-}
-
-function stopLoop() {
-  clearInterval(intervalId);
-  clearInterval(countdownId);
-  intervalId = null;
-  countdownId = null;
-  countdownEl.style.display = 'none';
-}
-
-function startCountdown(sec) {
-  countdownSec = sec;
-  clearInterval(countdownId);
-  countdownId = setInterval(() => {
-    countdownSec--;
-    countdownEl.textContent = `Next: ${countdownSec}s`;
-    if (countdownSec <= 0) countdownSec = parseInt(freqSelect.value);
-  }, 1000);
-}
-
-// ── Fetch Candles ──────────────────────────────────────────────
-async function fetchCandles(symbol) {
-  const now = Math.floor(Date.now() / 1000);
-  const dayStart = now - (now % 86400) - 86400; // yesterday 00:00 UTC
-  const dayEnd = dayStart + 86400;
-  const url = `${DELTA_BASE}/v2/history/candles?symbol=${symbol}&resolution=60&start=${dayStart}&end=${dayEnd}`;
-  try {
-    const res = await fetch(PROXY + encodeURIComponent(url));
-    const json = await res.json();
-    if (json.result && Array.isArray(json.result)) return json.result;
-    // fallback: try direct
-    const res2 = await fetch(url, { headers: { 'api-key': 'VBR3ThPR3exRrXRZh1WNrHS3FvEsBu' } });
-    const json2 = await res2.json();
-    return json2.result || [];
-  } catch(e) {
-    // Generate mock yesterday data for demo
-    return generateMockCandles(symbol);
-  }
-}
-
-function generateMockCandles(symbol) {
-  const bases = { BTCUSD: 67000, ETHUSD: 3200, SOLUSD: 145, BNBUSD: 580 };
-  const base = bases[symbol] || 50000;
-  const candles = [];
+// ── Delta API ─────────────────────────────────────────────
+async function fetchCandles(symbol, resolution) {
   const now = Math.floor(Date.now() / 1000);
   const dayStart = now - (now % 86400) - 86400;
-  let price = base + (Math.random() - 0.5) * base * 0.02;
-  for (let i = 0; i < 96; i++) {
+  const dayEnd = dayStart + 86400;
+  const url = `https://api.delta.exchange/v2/history/candles?symbol=${symbol}&resolution=${resolution}&start=${dayStart}&end=${dayEnd}`;
+  try {
+    const r = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+    const j = await r.json();
+    if (j.result && j.result.length > 0) return j.result;
+  } catch(e) {}
+  // Fallback: mock
+  return mockCandles(symbol, resolution, dayStart);
+}
+
+function mockCandles(symbol, res, dayStart) {
+  const bases = {BTCUSD:67000,ETHUSD:3200,SOLUSD:145,BNBUSD:580};
+  const base = bases[symbol] || 50000;
+  const count = Math.floor(86400 / (parseInt(res) * 60));
+  const candles = [];
+  let price = base * (1 + (Math.random()-.5)*.02);
+  for (let i = 0; i < count; i++) {
     const open = price;
-    const change = (Math.random() - 0.48) * base * 0.003;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * base * 0.001;
-    const low = Math.min(open, close) - Math.random() * base * 0.001;
-    const vol = Math.floor(Math.random() * 500 + 100);
-    candles.push({ time: dayStart + i * 900, open, high, low, close, volume: vol });
+    const chg = (Math.random()-.47) * base * (0.002 / Math.sqrt(parseInt(res)));
+    const close = open + chg;
+    const high = Math.max(open,close) + Math.random()*base*.0008;
+    const low  = Math.min(open,close) - Math.random()*base*.0008;
+    candles.push({time: dayStart + i*parseInt(res)*60, open, high, low, close, volume: Math.floor(Math.random()*400+50)});
     price = close;
   }
   return candles;
 }
 
-// ── Claude Analysis ──────────────────────────────────────────────
-async function callClaude(candles, symbol) {
-  // Use only 24 candles to keep prompt short
-  const sample = candles.slice(0, 24).map(c => [
-    new Date(c.time * 1000).toISOString().slice(11,16),
-    +c.open.toFixed(1),
-    +c.high.toFixed(1),
-    +c.low.toFixed(1),
-    +c.close.toFixed(1),
-    c.volume || 0
+// ── Claude call ───────────────────────────────────────────
+async function callClaude(candles, symbol, tf) {
+  // Compact sample — max 48 candles to save tokens
+  const step = Math.max(1, Math.floor(candles.length / 48));
+  const sample = candles.filter((_,i) => i % step === 0).map(c => [
+    new Date(c.time*1000).toISOString().slice(11,16),
+    +c.open.toFixed(1), +c.high.toFixed(1),
+    +c.low.toFixed(1),  +c.close.toFixed(1),
+    c.volume||0
   ]);
 
-  const prompt = `Quant trader task: analyze ${symbol} OHLCV data [time,o,h,l,c,vol] and backtest.
+  const prompt = `Quant backtest task: ${symbol} ${tf}m candles yesterday. Format: [time,open,high,low,close,vol]
 
-Pick one strategy: EMA Crossover, RSI, Bollinger Breakout, CPR, VWAP, Momentum.
-Backtest: $10000, 0.05% fee/trade.
+Pick one strategy that fits this price action: EMA Crossover, RSI Mean Reversion, Bollinger Breakout, CPR Pivot, VWAP Reversion, Momentum Breakout.
 
-Reply ONLY raw JSON, no markdown, no explanation outside JSON:
-{"strategy":"name","description":"why this fits in 1-2 sentences","reasoning":"market analysis 2-3 sentences","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"pnl_curve":[0,100,200]}}
+Generate up to 12 trade signals (BUY/SELL only, no HOLD). Each signal needs a time matching the data.
 
-Limit signals to max 8. pnl_curve max 20 points.
+Backtest rules: $10000 capital, full position per trade, 0.05% fee. Alternate BUY→SELL→BUY. Compute equity curve as array of equity values after each closed trade (start with 10000).
+
+Reply ONLY raw JSON, zero markdown:
+{"strategy":"name","description":"1 sentence why","reasoning":"2 sentence market analysis","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"winners":0,"losers":0,"equity_curve":[10000]}}
 
 Data:${JSON.stringify(sample)}`;
 
-  // Try direct first (works if key is workspace-scoped)
-  // Fall back to corsproxy if blocked
   const body = JSON.stringify({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1000,
-    messages: [{ role: 'user', content: prompt }]
+    model:'claude-sonnet-4-6',
+    max_tokens:1000,
+    messages:[{role:'user',content:prompt}]
   });
 
-  // Use Vercel proxy (avoids CORS + no special browser headers needed)
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-claude-key': claudeKey
-    },
-    body
-  });
+  // Try Vercel proxy first, then direct with header
+  let res;
+  try {
+    res = await fetch('/api/claude', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-claude-key':claudeKey},
+      body
+    });
+  } catch(e) {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':claudeKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body
+    });
+  }
 
   if (!res.ok) {
-    const errBody = await res.text();
-    throw new Error(`Claude API ${res.status}: ${errBody.slice(0,150)}`);
+    const err = await res.text();
+    throw new Error(`Claude ${res.status}: ${err.slice(0,120)}`);
   }
-
   const data = await res.json();
-  let text = data.content[0].text.trim();
-
-  // Strip any markdown fences
-  text = text.replace(/^```[a-z]*\n?/i, '').replace(/```$/,'').trim();
-
-  // Extract JSON object if wrapped in extra text
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error('No JSON in Claude response');
-
-  return JSON.parse(match[0]);
+  let text = data.content[0].text.trim().replace(/^```[a-z]*\n?/i,'').replace(/```$/,'').trim();
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('No JSON in Claude response');
+  return JSON.parse(m[0]);
 }
 
-// ── Main Analysis Loop ──────────────────────────────────────────────
-async function runAnalysis() {
-  const symbol = symbolSelect.value;
-  setLoading(true);
+// ── Main Sim Runner ───────────────────────────────────────
+async function runSim() {
+  if (!claudeKey) { toast('Add Claude API key first'); return; }
+  const symbol = document.getElementById('symbolSel').value;
+  const tf = document.getElementById('tfSel').value;
+  const btn = document.getElementById('runBtn');
+
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.querySelector('.spinner').style.display = 'block';
+  btn.lastChild.textContent = ' Fetching data...';
 
   try {
-    const candles = await fetchCandles(symbol);
-    lastCandles = candles;
-    renderPriceChart(candles, symbol, []);
+    // 1. Fetch candles
+    const candles = await fetchCandles(symbol, tf);
+    allCandles = candles;
+    document.getElementById('chartMeta').textContent = `${candles.length} candles · ${tf}m`;
+    document.getElementById('chartTitle').textContent = `${symbol} — Yesterday`;
 
-    const result = await callClaude(candles, symbol);
-    renderResults(result, candles, symbol);
-    lastUpdateEl.textContent = 'Updated ' + new Date().toLocaleTimeString();
-    // reset countdown
-    startCountdown(parseInt(freqSelect.value));
+    btn.lastChild.textContent = ' AI analyzing...';
+
+    // 2. Claude analysis
+    const result = await callClaude(candles, symbol, tf);
+
+    // Cost tracking
+    sessionCost += 0.01;
+    document.getElementById('costVal').textContent = sessionCost.toFixed(2);
+
+    allSignals = result.signals || [];
+
+    // 3. Build signal map by time
+    const sigMap = {};
+    allSignals.forEach(s => sigMap[s.time] = s);
+
+    // 4. Simulate trade-by-trade on full candle data
+    const simResult = simulateTrades(candles, allSignals);
+
+    // 5. Render everything
+    renderMetrics(result, simResult);
+    renderStrategy(result);
+    renderPriceChart(candles, allSignals);
+    renderPnlChart(simResult.equityCurve);
+    renderSignalTable(allSignals, simResult.trades);
+    setupPlayback(candles, allSignals, simResult);
+
+    document.getElementById('playbackBar').style.display = 'flex';
+    toast('Simulation complete ✓');
   } catch(e) {
-    showToast('Error: ' + e.message);
-    document.getElementById('reasoningBody').textContent = 'Error: ' + e.message;
+    toast('Error: ' + e.message);
+    document.getElementById('reasoningEl').textContent = 'Error: ' + e.message;
   }
-  setLoading(false);
+
+  btn.disabled = false;
+  btn.classList.remove('loading');
+  btn.querySelector('.spinner').style.display = 'none';
+  btn.lastChild.textContent = ' Run Simulation';
 }
 
-// ── Render Results ──────────────────────────────────────────────
-function renderResults(result, candles, symbol) {
-  // Strategy
-  document.getElementById('strategyContainer').innerHTML = `
-    <div class="strategy-card">
-      <div class="strategy-name">⚡ ${result.strategy}</div>
-      <div class="strategy-desc">${result.description}</div>
+// ── Trade Simulator ───────────────────────────────────────
+function simulateTrades(candles, signals) {
+  const FEE = 0.0005;
+  let equity = 10000;
+  let position = null; // {side, price, time}
+  const equityCurve = [10000];
+  const trades = [];
+  let wins = 0, losses = 0, maxEq = 10000, minEq = 10000;
+
+  // Map signals to candle indices
+  signals.forEach(sig => {
+    const idx = candles.findIndex(c => {
+      const t = new Date(c.time*1000).toISOString().slice(11,16);
+      return t === sig.time;
+    });
+    if (idx >= 0) sig._idx = idx;
+  });
+
+  signals.forEach(sig => {
+    if (sig._idx === undefined) return;
+    const price = sig.price || candles[sig._idx]?.close || 0;
+
+    if (sig.action === 'BUY' && !position) {
+      position = {side:'long', price, time:sig.time, equity};
+    } else if (sig.action === 'SELL' && position) {
+      const ret = (price - position.price) / position.price;
+      const pnl = equity * ret - equity * FEE * 2;
+      equity += pnl;
+      if (pnl > 0) wins++; else losses++;
+      equityCurve.push(+equity.toFixed(2));
+      maxEq = Math.max(maxEq, equity);
+      minEq = Math.min(minEq, equity);
+      trades.push({entry:position.time, exit:sig.time, side:'long', entryP:position.price, exitP:price, pnl:+pnl.toFixed(2), equity:+equity.toFixed(2)});
+      position = null;
+    } else if (sig.action === 'SELL' && !position) {
+      position = {side:'short', price, time:sig.time, equity};
+    } else if (sig.action === 'BUY' && position && position.side==='short') {
+      const ret = (position.price - price) / position.price;
+      const pnl = equity * ret - equity * FEE * 2;
+      equity += pnl;
+      if (pnl > 0) wins++; else losses++;
+      equityCurve.push(+equity.toFixed(2));
+      maxEq = Math.max(maxEq, equity);
+      minEq = Math.min(minEq, equity);
+      trades.push({entry:position.time, exit:sig.time, side:'short', entryP:position.price, exitP:price, pnl:+pnl.toFixed(2), equity:+equity.toFixed(2)});
+      position = null;
+    }
+  });
+
+  const total = wins + losses;
+  const ddPct = maxEq > 0 ? ((maxEq - minEq) / maxEq * 100) : 0;
+  return {
+    equityCurve, trades, equity,
+    retPct: +((equity-10000)/100).toFixed(2),
+    winRate: total > 0 ? +(wins/total*100).toFixed(1) : 0,
+    wins, losses, total,
+    ddPct: +ddPct.toFixed(2)
+  };
+}
+
+// ── Render Metrics ────────────────────────────────────────
+function renderMetrics(aiResult, sim) {
+  const ret = sim.retPct;
+  const retEl = document.getElementById('mRet');
+  retEl.textContent = (ret >= 0 ? '+' : '') + ret + '%';
+  retEl.className = 'mc-val ' + (ret >= 0 ? 'pos' : 'neg');
+
+  document.getElementById('mWin').textContent = sim.winRate + '%';
+  document.getElementById('mWinSub').textContent = `${sim.wins}W · ${sim.losses}L`;
+  document.getElementById('mTrades').textContent = sim.total;
+  document.getElementById('mDD').textContent = '-' + sim.ddPct + '%';
+  document.getElementById('mDD').className = 'mc-val ' + (sim.ddPct > 5 ? 'neg' : '');
+
+  const eq = sim.equity;
+  const eqEl = document.getElementById('mEq');
+  eqEl.textContent = '$' + eq.toLocaleString('en', {maximumFractionDigits:0});
+  eqEl.className = 'mc-val ' + (eq >= 10000 ? 'pos' : 'neg');
+}
+
+// ── Render Strategy ───────────────────────────────────────
+function renderStrategy(result) {
+  document.getElementById('stratContainer').innerHTML = `
+    <div class="strat-card">
+      <div class="strat-name">⚡ ${result.strategy}</div>
+      <div class="strat-desc">${result.description}</div>
     </div>`;
-
-  // Reasoning
-  document.getElementById('reasoningBody').textContent = result.reasoning;
-
-  // Metrics
-  const ret = result.backtest.total_return_pct;
-  const retEl = document.getElementById('metReturn');
-  retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
-  retEl.className = 'metric-val ' + (ret >= 0 ? 'pos' : 'neg');
-
-  document.getElementById('metWin').textContent = result.backtest.win_rate_pct.toFixed(1) + '%';
-  document.getElementById('metTrades').textContent = result.backtest.total_trades;
-  const dd = result.backtest.max_drawdown_pct;
-  const ddEl = document.getElementById('metDD');
-  ddEl.textContent = '-' + Math.abs(dd).toFixed(2) + '%';
-  ddEl.className = 'metric-val ' + (Math.abs(dd) > 5 ? 'neg' : 'neutral');
-
-  // Signals table
-  const signals = result.signals || [];
-  document.getElementById('sigCount').textContent = signals.length + ' signals';
-  if (signals.length === 0) {
-    document.getElementById('signalsContainer').innerHTML = '<div class="empty"><div class="empty-sub">No signals generated</div></div>';
-  } else {
-    const rows = signals.slice(0, 20).map(s => `
-      <tr>
-        <td>${s.time}</td>
-        <td><span class="pill ${s.action.toLowerCase()}">${s.action}</span></td>
-        <td>${typeof s.price === 'number' ? s.price.toLocaleString() : s.price}</td>
-        <td style="font-family:var(--sans);color:var(--muted)">${s.reason}</td>
-      </tr>`).join('');
-    document.getElementById('signalsContainer').innerHTML = `
-      <table class="signals-table">
-        <thead><tr><th>Time</th><th>Action</th><th>Price</th><th>Reason</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-  }
-
-  // Charts
-  renderPriceChart(candles, symbol, signals);
-  renderPnlChart(result.backtest.pnl_curve || []);
+  document.getElementById('reasoningEl').textContent = result.reasoning;
 }
 
-// ── Charts ──────────────────────────────────────────────
+// ── Signal Table ──────────────────────────────────────────
+function renderSignalTable(signals, trades) {
+  document.getElementById('sigMeta').textContent = signals.length + ' signals';
+  if (!signals.length) {
+    document.getElementById('sigContainer').innerHTML = '<div class="empty"><div class="empty-sub">No signals</div></div>';
+    return;
+  }
+  const rows = signals.map((s,i) => {
+    const trade = trades.find(t => t.entry === s.time || t.exit === s.time);
+    const pnl = trade && s.time === trade.exit ? `<span class="${trade.pnl>=0?'equity-up':'equity-dn'}">${trade.pnl>=0?'+':''}$${trade.pnl}</span>` : '--';
+    return `<tr id="sig-row-${i}">
+      <td>${s.time}</td>
+      <td><span class="pill ${s.action.toLowerCase()}">${s.action}</span></td>
+      <td>${(+s.price).toLocaleString('en',{maximumFractionDigits:1})}</td>
+      <td>${pnl}</td>
+      <td style="font-family:var(--sans);color:var(--muted);font-size:11px">${s.reason}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('sigContainer').innerHTML = `
+    <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Time</th><th>Action</th><th>Price</th><th>P&L</th><th>Reason</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+// ── Charts ────────────────────────────────────────────────
 function loadChartJS(cb) {
   if (window.Chart) { cb(); return; }
   const s = document.createElement('script');
@@ -666,122 +556,199 @@ function loadChartJS(cb) {
   document.head.appendChild(s);
 }
 
-function renderPriceChart(candles, symbol, signals) {
+function renderPriceChart(candles, signals, highlightIdx = -1) {
   loadChartJS(() => {
     const ctx = document.getElementById('priceChart').getContext('2d');
-    if (priceChartInst) priceChartInst.destroy();
-
-    const labels = candles.map(c => new Date(c.time * 1000).toISOString().slice(11,16));
+    if (priceChart) priceChart.destroy();
+    const labels = candles.map(c => new Date(c.time*1000).toISOString().slice(11,16));
     const prices = candles.map(c => +c.close);
 
-    const buyPoints = candles.map((c, i) => {
-      const t = new Date(c.time * 1000).toISOString().slice(11,16);
-      const sig = signals.find(s => s.time === t && s.action === 'BUY');
-      return sig ? +c.close : null;
+    // Signal overlays
+    const buys = candles.map(c => {
+      const t = new Date(c.time*1000).toISOString().slice(11,16);
+      return signals.find(s => s.time===t && s.action==='BUY') ? +c.close : null;
     });
-    const sellPoints = candles.map((c, i) => {
-      const t = new Date(c.time * 1000).toISOString().slice(11,16);
-      const sig = signals.find(s => s.time === t && s.action === 'SELL');
-      return sig ? +c.close : null;
+    const sells = candles.map(c => {
+      const t = new Date(c.time*1000).toISOString().slice(11,16);
+      return signals.find(s => s.time===t && s.action==='SELL') ? +c.close : null;
     });
 
-    document.getElementById('chartTitle').textContent = symbol + ' — Yesterday';
-    document.getElementById('chartMeta').textContent = `${candles.length} candles`;
+    // Highlight current sim position
+    const highlight = candles.map((_,i) => i === highlightIdx ? prices[i] : null);
 
-    priceChartInst = new Chart(ctx, {
-      type: 'line',
-      data: {
+    priceChart = new Chart(ctx, {
+      type:'line',
+      data:{
         labels,
-        datasets: [
-          {
-            label: 'Close',
-            data: prices,
-            borderColor: '#2563EB',
-            borderWidth: 1.5,
-            fill: true,
-            backgroundColor: 'rgba(37,99,235,0.05)',
-            pointRadius: 0,
-            tension: 0.3
-          },
-          {
-            label: 'BUY',
-            data: buyPoints,
-            type: 'scatter',
-            pointRadius: 6,
-            pointStyle: 'triangle',
-            backgroundColor: '#16A34A',
-            borderColor: '#16A34A'
-          },
-          {
-            label: 'SELL',
-            data: sellPoints,
-            type: 'scatter',
-            pointRadius: 6,
-            pointStyle: 'rectRot',
-            backgroundColor: '#DC2626',
-            borderColor: '#DC2626'
-          }
+        datasets:[
+          {label:'Price',data:prices,borderColor:'#2A5FE8',borderWidth:1.5,fill:true,backgroundColor:'rgba(42,95,232,0.04)',pointRadius:0,tension:.2},
+          {label:'BUY',data:buys,type:'scatter',pointRadius:7,pointStyle:'triangle',backgroundColor:'#15803D',borderColor:'#15803D',pointRotation:0},
+          {label:'SELL',data:sells,type:'scatter',pointRadius:7,pointStyle:'triangle',backgroundColor:'#B91C1C',borderColor:'#B91C1C',pointRotation:180},
+          {label:'Now',data:highlight,type:'scatter',pointRadius:8,pointStyle:'circle',backgroundColor:'#F59E0B',borderColor:'#fff',borderWidth:2}
         ]
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-        scales: {
-          x: { ticks: { maxTicksLimit: 8, font: { family: 'DM Mono', size: 10 } }, grid: { color: '#F0F2F5' } },
-          y: { ticks: { font: { family: 'DM Mono', size: 10 } }, grid: { color: '#F0F2F5' } }
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        animation:{duration:0},
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y?.toLocaleString('en',{maximumFractionDigits:1})}}},
+        scales:{
+          x:{ticks:{maxTicksLimit:8,font:{family:'DM Mono',size:10}},grid:{color:'#F0F2F6'}},
+          y:{ticks:{font:{family:'DM Mono',size:10}},grid:{color:'#F0F2F6'}}
         }
       }
     });
   });
 }
 
-function renderPnlChart(curve) {
+function renderPnlChart(curve, currentIdx = -1) {
   loadChartJS(() => {
     const ctx = document.getElementById('pnlChart').getContext('2d');
-    if (pnlChartInst) pnlChartInst.destroy();
-    if (!curve || curve.length === 0) return;
-
-    const color = curve[curve.length-1] >= 0 ? '#16A34A' : '#DC2626';
-    pnlChartInst = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: curve.map((_, i) => i),
-        datasets: [{
-          data: curve,
-          borderColor: color,
-          borderWidth: 2,
-          fill: true,
-          backgroundColor: color === '#16A34A' ? 'rgba(22,163,74,0.1)' : 'rgba(220,38,38,0.1)',
-          pointRadius: 0,
-          tension: 0.4
-        }]
+    if (pnlChart) pnlChart.destroy();
+    if (!curve || curve.length < 2) return;
+    const displayCurve = currentIdx >= 0 ? curve.slice(0, currentIdx+1) : curve;
+    const final = displayCurve[displayCurve.length-1];
+    const color = final >= 10000 ? '#15803D' : '#B91C1C';
+    document.getElementById('eqMeta').textContent = '$' + final.toLocaleString('en',{maximumFractionDigits:0});
+    pnlChart = new Chart(ctx, {
+      type:'line',
+      data:{
+        labels: displayCurve.map((_,i)=>i===0?'Start':`T${i}`),
+        datasets:[{data:displayCurve,borderColor:color,borderWidth:2,fill:true,backgroundColor:color==='#15803D'?'rgba(21,128,61,.1)':'rgba(185,28,28,.1)',pointRadius:3,tension:.4}]
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: {
-          x: { display: false },
-          y: { ticks: { font: { family: 'DM Mono', size: 9 } }, grid: { color: '#F0F2F5' } }
+      options:{
+        responsive:true,maintainAspectRatio:false,animation:{duration:300},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y?.toLocaleString('en',{maximumFractionDigits:0})}}},
+        scales:{
+          x:{display:false},
+          y:{ticks:{font:{family:'DM Mono',size:9}},grid:{color:'#F0F2F6'}}
         }
       }
     });
   });
 }
 
-// ── Loading State ──────────────────────────────────────────────
-function setLoading(v) {
-  if (v) {
-    document.getElementById('reasoningBody').innerHTML = '<div class="loader-wrap"><div class="spinner"></div> Analyzing market...</div>';
-    document.getElementById('signalsContainer').innerHTML = '<div class="loader-wrap"><div class="spinner"></div> Generating signals...</div>';
+// ── Playback ──────────────────────────────────────────────
+function setupPlayback(candles, signals, simResult) {
+  simStep = 0;
+  const slider = document.getElementById('simSlider');
+  slider.max = candles.length - 1;
+  slider.value = 0;
+  document.getElementById('pbTime').textContent = new Date(candles[0].time*1000).toISOString().slice(11,16);
+  updatePlaybackFrame(0, candles, signals, simResult);
+}
+
+function updatePlaybackFrame(idx, candles, signals, simResult) {
+  if (!candles.length) return;
+  idx = Math.max(0, Math.min(idx, candles.length-1));
+  simStep = idx;
+  document.getElementById('simSlider').value = idx;
+  const t = new Date(candles[idx].time*1000).toISOString().slice(11,16);
+  document.getElementById('pbTime').textContent = t;
+
+  // Update price chart highlight
+  renderPriceChart(candles, signals, idx);
+
+  // How many trades completed up to this candle
+  const completedTrades = simResult.trades.filter(tr => {
+    const exitCandle = candles.findIndex(c => new Date(c.time*1000).toISOString().slice(11,16) === tr.exit);
+    return exitCandle >= 0 && exitCandle <= idx;
+  });
+  const eqIdx = completedTrades.length;
+  renderPnlChart(simResult.equityCurve, eqIdx);
+
+  // Highlight active signal row
+  signals.forEach((_,i) => {
+    const row = document.getElementById('sig-row-'+i);
+    if (row) row.classList.remove('active-row');
+  });
+  const activeIdx = signals.findIndex(s => s.time === t);
+  if (activeIdx >= 0) {
+    const row = document.getElementById('sig-row-'+activeIdx);
+    if (row) { row.classList.add('active-row'); row.scrollIntoView({block:'nearest'}); }
+  }
+
+  // Open position tracker
+  let op = null;
+  const cur = candles[idx];
+  for (let i = signals.length-1; i >= 0; i--) {
+    const s = signals[i];
+    const sIdx = candles.findIndex(c => new Date(c.time*1000).toISOString().slice(11,16) === s.time);
+    if (sIdx <= idx) { op = s; break; }
+  }
+  const inTrade = simResult.trades.find(tr => {
+    const ei = candles.findIndex(c => new Date(c.time*1000).toISOString().slice(11,16) === tr.entry);
+    const xi = candles.findIndex(c => new Date(c.time*1000).toISOString().slice(11,16) === tr.exit);
+    return ei >= 0 && xi >= 0 && idx >= ei && idx < xi;
+  });
+  if (inTrade) {
+    const unrealized = inTrade.side === 'long'
+      ? (cur.close - inTrade.entryP) / inTrade.entryP * 100
+      : (inTrade.entryP - cur.close) / inTrade.entryP * 100;
+    document.getElementById('openTradePanel').style.display = '';
+    document.getElementById('openTradeBody').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div><div style="color:var(--muted);font-size:10px;margin-bottom:2px">SIDE</div><span class="pill ${inTrade.side==='long'?'buy':'sell'}">${inTrade.side.toUpperCase()}</span></div>
+        <div><div style="color:var(--muted);font-size:10px;margin-bottom:2px">ENTRY</div><span style="font-family:var(--mono)">${inTrade.entryP.toLocaleString('en',{maximumFractionDigits:1})}</span></div>
+        <div><div style="color:var(--muted);font-size:10px;margin-bottom:2px">CURRENT</div><span style="font-family:var(--mono)">${cur.close.toLocaleString('en',{maximumFractionDigits:1})}</span></div>
+        <div><div style="color:var(--muted);font-size:10px;margin-bottom:2px">UNREALIZED</div><span style="font-family:var(--mono);color:${unrealized>=0?'var(--green)':'var(--red)'}">${unrealized>=0?'+':''}${unrealized.toFixed(2)}%</span></div>
+      </div>`;
+  } else {
+    document.getElementById('openTradePanel').style.display = 'none';
   }
 }
 
-// ── Toast ──────────────────────────────────────────────
-function showToast(msg) {
+function onSlider(val) {
+  if (allCandles.length) updatePlaybackFrame(parseInt(val), allCandles, allSignals, {trades:[], equityCurve:[10000], ...window._lastSimResult});
+}
+
+let _simResult = null;
+const origRunSim = runSim;
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('playBtn');
+  if (isPlaying) {
+    btn.innerHTML = '<svg viewBox="0 0 10 12"><rect x="0" y="0" width="3" height="12"/><rect x="6" y="0" width="3" height="12"/></svg>';
+    btn.querySelector('svg rect') && (btn.querySelector('svg').innerHTML = '<rect x="0" y="0" width="3" height="12" fill="white"/><rect x="6" y="0" width="3" height="12" fill="white"/>');
+    playLoop();
+  } else {
+    btn.innerHTML = '<svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12" fill="white"/></svg>';
+    clearTimeout(simTimer);
+  }
+}
+
+function playLoop() {
+  if (!isPlaying) return;
+  const speed = parseInt(document.getElementById('speedSel').value);
+  if (simStep < allCandles.length - 1) {
+    simStep++;
+    updatePlaybackFrame(simStep, allCandles, allSignals, window._simResult || {trades:[],equityCurve:[10000]});
+    simTimer = setTimeout(playLoop, speed);
+  } else {
+    isPlaying = false;
+    document.getElementById('playBtn').innerHTML = '<svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12" fill="white"/></svg>';
+  }
+}
+
+// Patch runSim to store result
+const _origRunSim = runSim;
+window.runSim = async function() {
+  const origSim = simulateTrades;
+  window.simulateTrades = function(c, s) {
+    const r = origSim(c, s);
+    window._simResult = r;
+    return r;
+  };
+  await _origRunSim();
+  window.simulateTrades = origSim;
+};
+
+// ── Toast ─────────────────────────────────────────────────
+function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 </script>
 </body>
