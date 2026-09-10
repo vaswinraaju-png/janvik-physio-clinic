@@ -549,24 +549,27 @@ Limit signals to max 8. pnl_curve max 20 points.
 
 Data:${JSON.stringify(sample)}`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  // Try direct first (works if key is workspace-scoped)
+  // Fall back to corsproxy if blocked
+  const body = JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1000,
+    messages: [{ role: 'user', content: prompt }]
+  });
+
+  // Use Vercel proxy (avoids CORS + no special browser headers needed)
+  const res = await fetch('/api/claude', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': claudeKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      'x-claude-key': claudeKey
     },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body
   });
 
   if (!res.ok) {
     const errBody = await res.text();
-    throw new Error(`Claude API ${res.status}: ${errBody.slice(0,120)}`);
+    throw new Error(`Claude API ${res.status}: ${errBody.slice(0,150)}`);
   }
 
   const data = await res.json();
