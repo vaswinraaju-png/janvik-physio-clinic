@@ -467,8 +467,8 @@ Rules:
 
 // ── Claude call ───────────────────────────────────────────
 async function callClaude(candles, symbol, tf) {
-  // Compact sample — max 48 candles to save tokens
-  const step = Math.max(1, Math.floor(candles.length / 48));
+  // Compact sample — max 32 candles to keep prompt short
+  const step = Math.max(1, Math.floor(candles.length / 32));
   const sample = candles.filter((_,i) => i % step === 0).map(c => [
     new Date(c.time*1000).toISOString().slice(11,16),
     +c.open.toFixed(1), +c.high.toFixed(1),
@@ -494,18 +494,18 @@ async function callClaude(candles, symbol, tf) {
 
 3. EXPLAIN your decisions with: market_regime (Trending/Ranging/Choppy/Breakout), why_strategy, why_tf (each 1 sentence).
 
-4. APPLY the chosen strategy: generate up to 10 BUY/SELL signals. Signal times must exactly match times in the data.
+4. APPLY the chosen strategy: generate 4-8 BUY/SELL signals max. Signal times must exactly match times in the data.
 
-5. BACKTEST: $10000, 0.05% fee/side, full position per trade.
+5. BACKTEST: $10000, 0.05% fee/side, full position per trade. equity_curve max 10 values.
 
-Reply ONLY raw JSON:
-{"strategy":"name","chosen_tf":"15m","market_regime":"Trending","why_strategy":"1 sentence","why_tf":"1 sentence","description":"1 sentence","reasoning":"2 sentences","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"brief"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"winners":0,"losers":0,"equity_curve":[10000]}}
+Reply ONLY raw JSON, be concise in reason fields (5 words max each):
+{"strategy":"name","chosen_tf":"15m","market_regime":"Trending","why_strategy":"1 sentence","why_tf":"1 sentence","description":"1 sentence","reasoning":"1 sentence","signals":[{"time":"HH:MM","action":"BUY","price":0,"reason":"5 words"}],"backtest":{"total_return_pct":0.0,"win_rate_pct":0.0,"total_trades":0,"max_drawdown_pct":0.0,"winners":0,"losers":0,"equity_curve":[10000]}}
 
 Data:${JSON.stringify(sample)}`;
 
   const body = JSON.stringify({
     model:'claude-sonnet-4-6',
-    max_tokens:1000,
+    max_tokens:1500,
     messages:[{role:'user',content:prompt}]
   });
 
